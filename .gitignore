@@ -55,3 +55,8 @@ docs/_build/
 
 # PyBuilder
 target/
+
+
+# Ignore Intellij crazy files
+.idea/workspace.xml
+.idea/vcs.xml
