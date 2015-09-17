@@ -2,6 +2,19 @@ __author__ = 'tdpreece'
 import requests
 import json
 
+
+def get_queue_size():
+    get_queue_size_payload = {
+        "type":"read",
+        "mbean":"org.apache.activemq:type=Broker,brokerName=TEST.BROKER,destinationType=Queue,destinationName=test.req",
+        "attribute" : "QueueSize"
+    }
+    r = requests.post(url, json=get_queue_size_payload)
+    json_response = json.loads(r.text)
+    queue_size = json_response['value']
+    return queue_size
+
+
 url  = 'http://localhost:28161/api/jolokia'
 create_queue_payload = {
     "type":"exec",
@@ -22,14 +35,7 @@ send_text_message_payload = {
 r = requests.post(url, json=send_text_message_payload)
 print r
 
-get_queue_size_payload = {
-    "type":"read",
-    "mbean":"org.apache.activemq:type=Broker,brokerName=TEST.BROKER,destinationType=Queue,destinationName=test.req",
-    "attribute" : "QueueSize"
-}
-r = requests.post(url, json=get_queue_size_payload)
-json_response = json.loads(r.text)
-print json_response['value']
+print get_queue_size()
 
 browse_messages_payload = {
     "type":"exec",
@@ -47,11 +53,4 @@ purge_queue_payload = {
 r = requests.post(url, json=purge_queue_payload)
 print r.text
 
-get_queue_size_payload = {
-    "type":"read",
-    "mbean":"org.apache.activemq:type=Broker,brokerName=TEST.BROKER,destinationType=Queue,destinationName=test.req",
-    "attribute" : "QueueSize"
-}
-r = requests.post(url, json=get_queue_size_payload)
-json_response = json.loads(r.text)
-print json_response['value']
+print get_queue_size()
