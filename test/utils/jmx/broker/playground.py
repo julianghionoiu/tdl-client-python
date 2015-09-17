@@ -33,6 +33,7 @@ send_text_message_payload = {
 }
 
 r = requests.post(url, json=send_text_message_payload)
+print "status code is 200 is {}".format(r.status_code == 200)
 print r
 
 print get_queue_size()
