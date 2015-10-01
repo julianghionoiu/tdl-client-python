@@ -2,18 +2,27 @@ __author__ = 'tdpreece'
 import requests
 import json
 
+from jolokia_session import JolokiaSession
+
+
+session = JolokiaSession.connect('localhost', '28161')
+get_queue_size_payload = {
+    "type": "read",
+    "mbean": "org.apache.activemq:type=Broker,brokerName=TEST.BROKER,destinationType=Queue,destinationName=test.req",
+    "attribute": "QueueSize"
+}
+session.request(get_queue_size_payload)
+
 
 def get_queue_size():
+    session = JolokiaSession.connect('localhost', '28161')
     get_queue_size_payload = {
-        "type":"read",
-        "mbean":"org.apache.activemq:type=Broker,brokerName=TEST.BROKER,destinationType=Queue,destinationName=test.req",
-        "attribute" : "QueueSize"
+        "type": "read",
+        "mbean": "org.apache.activemq:type=Broker,brokerName=TEST.BROKER,destinationType=Queue,destinationName=test.req",
+        "attribute": "QueueSize"
     }
-    r = requests.post(url, json=get_queue_size_payload)
-    json_response = json.loads(r.text)
-    queue_size = json_response['value']
-    return queue_size
-
+    queue_size = session.request(get_queue_size_payload)
+    print "Queue size = {}".format(queue_size)
 
 url  = 'http://localhost:28161/api/jolokia'
 create_queue_payload = {
