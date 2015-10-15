@@ -30,15 +30,6 @@ queue.send_text_message("Message from RemoteJmxQueue")
 print "Queue size = {}".format(queue.get_size())
 print "Message contents = {}".format(queue.get_message_contents())
 
-
-browse_messages_payload = {
-    "type":"exec",
-    "mbean":"org.apache.activemq:type=Broker,brokerName=TEST.BROKER,destinationType=Queue,destinationName=test.req",
-    "operation":"browse()"
-}
-r = requests.post(url, json=browse_messages_payload)
-print r.text
-
 purge_queue_payload = {
     "type":"exec",
     "mbean":"org.apache.activemq:type=Broker,brokerName=TEST.BROKER,destinationType=Queue,destinationName=test.req",
