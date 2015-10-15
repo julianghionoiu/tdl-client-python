@@ -25,14 +25,13 @@ class RemoteJmxQueue(object):
         }
         self.jolokia_session.request(operation)
 
-    def get_size():
-        pass
-    # attribute = {
-    #     type: 'read',
-    #     mbean: queue_bean,
-    #     attribute: 'QueueSize',
-    # }
-    # jolokia_session.request(attribute)
+    def get_size(self):
+        attribute = {
+            'type': 'read',
+            'mbean': self.queue_bean,
+            'attribute': 'QueueSize',
+        }
+        return self.jolokia_session.request(attribute)
 
     def get_message_contents():
         pass

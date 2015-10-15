@@ -49,6 +49,7 @@ print "status code is 200 is {}".format(r.status_code == 200)
 print r
 
 print get_queue_size()
+print "Queue size = {}".format(queue.get_size())
 
 browse_messages_payload = {
     "type":"exec",
