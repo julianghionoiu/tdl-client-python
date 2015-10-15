@@ -9,13 +9,6 @@ class RemoteJmxQueue(object):
             "destinationType=Queue,destinationName={}"
         ).format(broker_name, queue_name)
 
-# send_text_message_payload = {
-#     "type":"exec",
-#     "mbean":"org.apache.activemq:type=Broker,brokerName=TEST.BROKER,destinationType=Queue,destinationName=test.req",
-#     "operation":"sendTextMessage(java.lang.String)",
-#     "arguments":["test message"]
-# }
-
     def send_text_message(self, request):
         operation = {
             'type': 'exec',
