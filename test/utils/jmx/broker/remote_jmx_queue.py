@@ -26,21 +26,15 @@ class RemoteJmxQueue(object):
         }
         return self.jolokia_session.request(attribute)
 
-    def get_message_contents():
-        pass
-    # operation = {
-    #     type: 'exec',
-    #     mbean: queue_bean,
-    #     operation: 'browse()',
-    # }
-    # result = jolokia_session.request(operation)
-    # result.map  { |composite_data|
-    #   if composite_data.has_key?('Text')
-    #     composite_data['Text']
-    #   else
-    #     composite_data['BodyPreview'].to_a.pack('c*')
-    #
-    # }
+    def get_message_contents(self):
+
+        operation = {
+            'type': 'exec',
+            'mbean': self.queue_bean,
+            'operation': 'browse()',
+        }
+        result = self.jolokia_session.request(operation)
+        return map(lambda r : r['Text'], result)
 
     def purge():
         pass

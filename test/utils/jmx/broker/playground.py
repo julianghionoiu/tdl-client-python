@@ -28,6 +28,8 @@ queue = RemoteJmxQueue(session, broker_name='TEST.BROKER', queue_name='test.req'
 queue.send_text_message("Message from RemoteJmxQueue")
 
 print "Queue size = {}".format(queue.get_size())
+print "Message contents = {}".format(queue.get_message_contents())
+
 
 browse_messages_payload = {
     "type":"exec",
