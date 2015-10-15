@@ -36,13 +36,10 @@ class RemoteJmxQueue(object):
         result = self.jolokia_session.request(operation)
         return map(lambda r : r['Text'], result)
 
-    def purge():
-        pass
-    # operation = {
-    #     type: 'exec',
-    #     mbean: queue_bean,
-    #     operation: 'purge()',
-    # }
-    # jolokia_session.request(operation)
-    #
-    #
+    def purge(self):
+        operation = {
+            'type': 'exec',
+            'mbean': self.queue_bean,
+            'operation': 'purge()',
+        }
+        self.jolokia_session.request(operation)
