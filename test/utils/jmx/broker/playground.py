@@ -31,7 +31,7 @@ create_queue_payload = {
     "operation":"addQueue",
     "arguments":["test.req"]
 }
-r = requests.post(url, json=create_queue_payload)
+r = session.request(create_queue_payload)
 print r
 
 send_text_message_payload = {
