@@ -3,7 +3,7 @@ import requests
 import json
 
 from jolokia_session import JolokiaSession
-
+from remote_jmx_queue import RemoteJmxQueue
 
 session = JolokiaSession.connect('localhost', '28161')
 get_queue_size_payload = {
@@ -40,6 +40,9 @@ send_text_message_payload = {
     "operation":"sendTextMessage(java.lang.String)",
     "arguments":["test message"]
 }
+
+queue = RemoteJmxQueue(session, broker_name='TEST.BROKER', queue_name='test.req')
+queue.send_text_message("Message from RemoteJmxQueue")
 
 r = requests.post(url, json=send_text_message_payload)
 print "status code is 200 is {}".format(r.status_code == 200)
