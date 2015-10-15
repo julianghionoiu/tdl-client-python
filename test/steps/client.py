@@ -16,69 +16,67 @@ def client_with_wrong_broker(context):
 
 @given("I receive the following requests")
 def initialize_request_queue(context):
+    print(context.table.headings[0])
     for row in context.table:
-        print(row)
+        print(row[0])
 
     pass
 
 
 # ~~~~~ Implementations
 
-@when("I go live with an implementation that adds two numbers")
-def step_impl(context):
+@when("I go live with an implementation that (?P<does_something>.*)")
+def go_live(context, does_something):
+    print(does_something)
     pass
 
 
+@when("I do a trial run with an implementation that (?P<does_something>.*)")
+def trial_run(context, does_something):
+    print(does_something)
+    pass
+
+# ~~~~~ Assertions
+
 @then("the client should consume all requests")
-def step_impl(context):
+def request_queue_empty(context):
     pass
 
 
 @step("the client should publish the following responses")
-def step_impl(context):
+def response_queue_contains_expected(context):
+    print(context.table.headings[0])
+    for row in context.table:
+        print(row[0])
     pass
 
 
 @then("the client should display to console")
-def step_impl(context):
-    pass
-
-
-@when("I go live with an implementation that returns null")
-def step_impl(context):
-    pass
-
-
-@then("the client should not consume any request")
-def step_impl(context):
-    pass
-
-
-@step("the client should not publish any response")
-def step_impl(context):
-    pass
-
-
-@when("I go live with an implementation that throws exception")
-def step_impl(context):
-    pass
-
-
-@when("I go live with an implementation that is valid")
-def step_impl(context):
-    pass
-
-
-@then("I should get no exception")
-def step_impl(context):
-    pass
-
-
-@when("I do a trial run with an implementation that adds two numbers")
-def step_impl(context):
+def the_client_should_display_to_console(context):
+    print(context.table.headings[0])
+    for row in context.table:
+        print(row[0])
     pass
 
 
 @step("the client should not display to console")
-def step_impl(context):
+def the_client_should_not_display_to_console(context):
+    print(context.table.headings[0])
+    for row in context.table:
+        print(row[0])
+    pass
+
+
+@then("the client should not consume any request")
+def request_queue_unchanged(context):
+    pass
+
+
+@step("the client should not publish any response")
+def response_queue_unchanged(context):
+    pass
+
+
+@then("I should get no exception")
+def i_should_get_no_exception(context):
     pass
