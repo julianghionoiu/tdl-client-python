@@ -24,19 +24,8 @@ create_queue_payload = {
 r = session.request(create_queue_payload)
 print r
 
-send_text_message_payload = {
-    "type":"exec",
-    "mbean":"org.apache.activemq:type=Broker,brokerName=TEST.BROKER,destinationType=Queue,destinationName=test.req",
-    "operation":"sendTextMessage(java.lang.String)",
-    "arguments":["test message"]
-}
-
 queue = RemoteJmxQueue(session, broker_name='TEST.BROKER', queue_name='test.req')
 queue.send_text_message("Message from RemoteJmxQueue")
-
-r = requests.post(url, json=send_text_message_payload)
-print "status code is 200 is {}".format(r.status_code == 200)
-print r
 
 print "Queue size = {}".format(queue.get_size())
 
