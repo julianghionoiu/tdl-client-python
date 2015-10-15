@@ -4,6 +4,7 @@ import json
 
 from jolokia_session import JolokiaSession
 from remote_jmx_queue import RemoteJmxQueue
+from remote_jmx_broker import RemoteJmxBroker
 
 session = JolokiaSession.connect('localhost', '28161')
 get_queue_size_payload = {
@@ -33,3 +34,9 @@ print "Message contents = {}".format(queue.get_message_contents())
 queue.purge()
 
 print "Queue size = {}".format(queue.get_size())
+
+
+# ******** Using Broker **********
+
+broker = RemoteJmxBroker.connect('localhost', '28161','TEST.BROKER')
+broker.add_queue('test_queue')
