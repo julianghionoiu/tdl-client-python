@@ -20,4 +20,4 @@ class RemoteJmxBroker(object):
             'arguments': [queue_name]
         }
         self.jolokia_session.request(operation)
-        RemoteJmxQueue(self.jolokia_session, self.broker_name, queue_name)
+        return RemoteJmxQueue(self.jolokia_session, self.broker_name, queue_name)
