@@ -1,12 +1,19 @@
 from behave import *
+from .utils.jmx.broker.remote_jmx_broker import RemoteJmxBroker
+
 
 use_step_matcher("re")
 
 # ~~~~~ Setup
 
+
 @given("I start with a clean broker")
 def create_the_queues(context):
-    pass
+    broker = RemoteJmxBroker.connect('localhost', '28161', 'TEST.BROKER')
+    request_queue = broker.add_queue('test.req')
+    request_queue.purge()
+    response_queue = broker.add_queue('test.resp')
+    response_queue.purge()
 
 
 @given("the broker is not available")
@@ -37,6 +44,7 @@ def trial_run(context, does_something):
     pass
 
 # ~~~~~ Assertions
+
 
 @then("the client should consume all requests")
 def request_queue_empty(context):
