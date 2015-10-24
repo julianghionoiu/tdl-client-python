@@ -1,5 +1,4 @@
 from behave import *
-from .utils.jmx.broker.remote_jmx_broker import RemoteJmxBroker
 
 
 use_step_matcher("re")
@@ -9,10 +8,9 @@ use_step_matcher("re")
 
 @given("I start with a clean broker")
 def create_the_queues(context):
-    broker = RemoteJmxBroker.connect('localhost', '28161', 'TEST.BROKER')
-    request_queue = broker.add_queue('test.req')
+    request_queue = context.broker.add_queue('test.req')
     request_queue.purge()
-    response_queue = broker.add_queue('test.resp')
+    response_queue = context.broker.add_queue('test.resp')
     response_queue.purge()
 
 
