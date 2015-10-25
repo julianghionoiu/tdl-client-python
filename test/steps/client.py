@@ -1,5 +1,5 @@
 from behave import *
-
+from tdl.client import Client
 
 use_step_matcher("re")
 
@@ -12,6 +12,9 @@ def create_the_queues(context):
     request_queue.purge()
     response_queue = context.broker.add_queue('test.resp')
     response_queue.purge()
+    stomp_port = '21613'
+    username = 'test'
+    context.client = Client('localhost', stomp_port, username)
 
 
 @given("the broker is not available")
