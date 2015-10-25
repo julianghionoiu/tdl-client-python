@@ -12,9 +12,10 @@ def create_the_queues(context):
     request_queue.purge()
     response_queue = context.broker.add_queue('test.resp')
     response_queue.purge()
+    hostname = 'localhost'
     stomp_port = '21613'
     username = 'test'
-    context.client = Client('localhost', stomp_port, username)
+    context.client = Client(hostname, stomp_port, username)
 
 
 @given("the broker is not available")
