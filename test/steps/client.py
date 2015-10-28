@@ -9,10 +9,10 @@ use_step_matcher("re")
 
 @given("I start with a clean broker")
 def create_the_queues(context):
-    request_queue = context.broker.add_queue('test.req')
-    request_queue.purge()
-    response_queue = context.broker.add_queue('test.resp')
-    response_queue.purge()
+    context.request_queue = context.broker.add_queue('test.req')
+    context.request_queue.purge()
+    context.response_queue = context.broker.add_queue('test.resp')
+    context.response_queue.purge()
     hostname = 'localhost'
     stomp_port = '21613'
     username = 'test'
@@ -26,11 +26,9 @@ def client_with_wrong_broker(context):
 
 @given("I receive the following requests")
 def initialize_request_queue(context):
-    print(context.table.headings[0])
+    context.request_queue.send_text_message(context.table.headings[0])
     for row in context.table:
-        print(row[0])
-
-    pass
+        context.request_queue.send_text_message(row[0])
 
 
 # ~~~~~ Implementations
@@ -40,8 +38,9 @@ def step_impl(context):
     print(context.table.headings[0])
     for row in context.table:
         print(row[0])
+    
+    context.client.go_live_with()
 
-    pass
 
 @when("I do a trial run with the following implementations")
 def step_impl(context):
@@ -49,15 +48,15 @@ def step_impl(context):
     for row in context.table:
         print(row[0])
 
-    pass
+    context.client.go_live_with()
+
 
 # ~~~~~ Assertions
 
 
 @then("the client should consume all requests")
 def request_queue_empty(context):
-    pass
-
+    assert context.request_queue.get_size() is 0, "Requests have not been consumed"
 
 @step("the client should publish the following responses")
 def response_queue_contains_expected(context):
