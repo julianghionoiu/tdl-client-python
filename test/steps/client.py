@@ -35,15 +35,20 @@ def initialize_request_queue(context):
 
 # ~~~~~ Implementations
 
-@when("I go live with an implementation that (?P<does_something>.*)")
-def go_live(context, does_something):
-    print(does_something)
+@when("I go live with the following implementations")
+def step_impl(context):
+    print(context.table.headings[0])
+    for row in context.table:
+        print(row[0])
+
     pass
 
+@when("I do a trial run with the following implementations")
+def step_impl(context):
+    print(context.table.headings[0])
+    for row in context.table:
+        print(row[0])
 
-@when("I do a trial run with an implementation that (?P<does_something>.*)")
-def trial_run(context, does_something):
-    print(does_something)
     pass
 
 # ~~~~~ Assertions
@@ -91,3 +96,5 @@ def response_queue_unchanged(context):
 @then("I should get no exception")
 def i_should_get_no_exception(context):
     pass
+
+
