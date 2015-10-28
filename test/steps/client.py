@@ -1,4 +1,5 @@
 from behave import given, step, then, use_step_matcher, when
+from hamcrest import assert_that, equal_to, is_
 from tdl.client import Client
 
 
@@ -26,9 +27,9 @@ def client_with_wrong_broker(context):
 
 @given("I receive the following requests")
 def initialize_request_queue(context):
-    context.request_queue.send_text_message(context.table.headings[0])
-    for row in context.table:
-        context.request_queue.send_text_message(row[0])
+    requests = table_as_list(context)
+    for request in requests:
+        context.request_queue.send_text_message(request)
 
 
 # ~~~~~ Implementations
@@ -56,14 +57,12 @@ def step_impl(context):
 
 @then("the client should consume all requests")
 def request_queue_empty(context):
-    assert context.request_queue.get_size() is 0, "Requests have not been consumed"
+    assert_that(context.request_queue.get_size(), is_(equal_to(0)), "Requests have not been consumed")
 
 @step("the client should publish the following responses")
 def response_queue_contains_expected(context):
-    print(context.table.headings[0])
-    for row in context.table:
-        print(row[0])
-    pass
+    expected_responses = table_as_list(context)
+    assert_that(context.response_queue.get_message_contents(),  is_(equal_to(expected_responses)), "The responses are not correct" )
 
 
 @then("the client should display to console")
@@ -96,4 +95,7 @@ def response_queue_unchanged(context):
 def i_should_get_no_exception(context):
     pass
 
+# ~~~~ Helpers
 
+def table_as_list(context):
+    return [context.table.headings[0]] + [row[0] for row in context.table]
