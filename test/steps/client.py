@@ -34,13 +34,18 @@ def initialize_request_queue(context):
 
 # ~~~~~ Implementations
 
+TEST_IMPLEMENTATIONS = {
+    'adds two numbers': lambda params: int(params[0]) + int(params[1]),
+    'increment number': lambda params: int(params[0]) + 1,
+    'returns null': lambda params: None
+}
+
 @when("I go live with the following implementations")
 def step_impl(context):
-    print(context.table.headings[0])
-    for row in context.table:
-        print(row[0])
-    
-    context.client.go_live_with()
+    implementation_map = {}
+    for row in table_as_list_of_rows(context):
+        implementation_map[row[0]] = TEST_IMPLEMENTATIONS[row[1]]
+    context.client.go_live_with(implementation_map)
 
 
 @when("I do a trial run with the following implementations")
@@ -96,6 +101,9 @@ def i_should_get_no_exception(context):
     pass
 
 # ~~~~ Helpers
+def table_as_list_of_rows(context):
+    return [context.table.headings] + [row for row in context.table]
+
 
 def table_as_list(context):
     return [context.table.headings[0]] + [row[0] for row in context.table]
