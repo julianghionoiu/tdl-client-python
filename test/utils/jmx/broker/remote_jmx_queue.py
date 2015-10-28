@@ -1,3 +1,5 @@
+import codecs
+
 from jolokia_session import JolokiaSession
 
 
@@ -34,7 +36,10 @@ class RemoteJmxQueue(object):
             'operation': 'browse()',
         }
         result = self.jolokia_session.request(operation)
-        return map(lambda r : r['Text'], result)
+        if result[0].has_key('Text'):
+            return map(lambda r : r['Text'], result)
+        else:
+            return map(lambda r : str(bytearray(r['BodyPreview'])), result)
 
     def purge(self):
         operation = {
