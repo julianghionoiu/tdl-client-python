@@ -20,9 +20,11 @@ class Client(object):
         time.sleep(1)
         conn.disconnect()
 
+    def trial_run_with(self, implementation_map):
+        self.go_live_with(implementation_map)
+
 
 class MyListener(stomp.ConnectionListener):
-
     def __init__(self, conn, implementation_map):
         self.conn = conn
         self.implementation_map = implementation_map
