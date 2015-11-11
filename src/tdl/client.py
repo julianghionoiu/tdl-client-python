@@ -47,17 +47,16 @@ class MyListener(stomp.ConnectionListener):
         except Exception as e:
             logger.info('The user implementation has thrown an exception: {}'.format(e.message))
             result = None
-
+        params_str = ", ".join([str(p) for p in params])
+        print('id = {id}, req = {method}({params}), resp = {result}'.format(id=id, method=method, params=params_str, result=result))
         if result is not None:
             self.conn.ack(headers['message-id'], headers['subscription'])
-
-        response = OrderedDict([
-            ('result', result),
-            ('error', None),
-            ('id', id),
-        ])
-
-        self.conn.send(
-            body=json.dumps(response, separators=(',', ':')),
-            destination='test.resp'
-        )
+            response = OrderedDict([
+                ('result', result),
+                ('error', None),
+                ('id', id),
+            ])
+            self.conn.send(
+                body=json.dumps(response, separators=(',', ':')),
+                destination='test.resp'
+            )

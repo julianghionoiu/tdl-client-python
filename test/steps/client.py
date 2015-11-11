@@ -1,5 +1,7 @@
+import sys
+
 from behave import given, step, then, use_step_matcher, when
-from hamcrest import assert_that, equal_to, is_
+from hamcrest import assert_that, contains_string, equal_to, is_
 from tdl.client import Client
 
 use_step_matcher("re")
@@ -59,6 +61,7 @@ def step_impl(context):
     context.client.go_live_with(implementation_map)
 
 
+
 @when("I do a trial run with the following implementations")
 def step_impl(context):
     implementation_map = {}
@@ -84,10 +87,15 @@ def response_queue_contains_expected(context):
 
 @then("the client should display to console")
 def the_client_should_display_to_console(context):
-    print(context.table.headings[0])
+    assert_that(
+        context.stdout_capture.getvalue(),
+        contains_string(context.table.headings[0])
+    ) 
     for row in context.table:
-        print(row[0])
-    pass
+        assert_that(
+            context.stdout,
+            contains_string(row[0])
+        ) 
 
 
 @step("the client should not display to console")
@@ -109,7 +117,11 @@ def request_queue_unchanged(context):
 
 @step("the client should not publish any response")
 def response_queue_unchanged(context):
-    pass
+    assert_that(
+        context.response_queue.get_size(),
+        is_(equal_to(0)),
+        "The response queue has different size. Messages have been published"
+    )
 
 
 @then("I should get no exception")
