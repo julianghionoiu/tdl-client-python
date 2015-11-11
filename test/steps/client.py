@@ -30,6 +30,7 @@ def initialize_request_queue(context):
     requests = table_as_list(context)
     for request in requests:
         context.request_queue.send_text_message(request)
+    context.request_count = context.request_queue.get_size()
 
 
 # ~~~~~ Implementations
@@ -99,7 +100,11 @@ def the_client_should_not_display_to_console(context):
 
 @then("the client should not consume any request")
 def request_queue_unchanged(context):
-    pass
+    assert_that(
+        context.request_queue.get_size(), 
+        is_(equal_to(context.request_count)), 
+        "Requests have been consumed"
+    )
 
 
 @step("the client should not publish any response")

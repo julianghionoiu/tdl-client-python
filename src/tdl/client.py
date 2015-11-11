@@ -1,9 +1,15 @@
 __author__ = 'tdpreece'
+import logging
+import sys
 import stomp
 import time
 import json
 
 from collections import OrderedDict
+
+
+logger = logging.getLogger('tdl.client')
+logger.addHandler(logging.NullHandler())
 
 
 class Client(object):
@@ -16,7 +22,7 @@ class Client(object):
         conn.start()
         conn.connect(wait=True)
         conn.set_listener('my_listener', MyListener(conn, implementation_map))
-        conn.subscribe(destination='test.req', id=1)
+        conn.subscribe(destination='test.req', id=1, ack='client-individual')
         time.sleep(1)
         conn.disconnect()
 
@@ -36,7 +42,14 @@ class MyListener(stomp.ConnectionListener):
         id = decoded_message['id']
 
         implementation = self.implementation_map[method]
-        result = implementation(params)
+        try:
+            result = implementation(params)
+        except Exception as e:
+            logger.info('The user implementation has thrown an exception: {}'.format(e.message))
+            result = None
+
+        if result is not None:
+            self.conn.ack(headers['message-id'], headers['subscription'])
 
         response = OrderedDict([
             ('result', result),
