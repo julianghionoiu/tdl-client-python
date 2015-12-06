@@ -47,7 +47,7 @@ class Listener(stomp.ConnectionListener):
         self.conn = conn
         self.implementation_map = implementation_map
 
-   def on_message_common(self, message):
+   def respond_to(self, message):
        decoded_message = json.loads(message)
        method = decoded_message['method']
        params = decoded_message['params']
@@ -66,7 +66,7 @@ class Listener(stomp.ConnectionListener):
 
 class MyListener(Listener):
     def on_message(self, headers, message):
-        id, result = self.on_message_common(message)
+        id, result = self.respond_to(message)
         if result is not None:
             remote_broker = RemoteBroker(self.conn)
             remote_broker.acknowledge(headers)
@@ -80,7 +80,7 @@ class MyListener(Listener):
 
 class PeekListener(Listener):
     def on_message(self, headers, message):
-        id, result = self.on_message_common(message)
+        id, result = self.respond_to(message)
 
 class RemoteBroker(object):
     def __init__(self, conn):
