@@ -1,4 +1,5 @@
 __author__ = 'tdpreece'
+__author__ = 'tdpreece'
 import logging
 import sys
 import stomp
@@ -19,13 +20,16 @@ class Client(object):
 
     def go_live_with(self, implementation_map):
         hosts = [(self.hostname, self.port)]
-        conn = stomp.Connection(host_and_ports=hosts)
-        conn.start()
-        conn.connect(wait=True)
-        conn.set_listener('my_listener', MyListener(conn, implementation_map))
-        conn.subscribe(destination='test.req', id=1, ack='client-individual')
-        time.sleep(1)
-        conn.disconnect()
+        try:
+            conn = stomp.Connection(host_and_ports=hosts)
+            conn.start()
+            conn.connect(wait=True)
+            conn.set_listener('my_listener', MyListener(conn, implementation_map))
+            conn.subscribe(destination='test.req', id=1, ack='client-individual')
+            time.sleep(1)
+            conn.disconnect()
+        except Exception as e:
+            logger.exception('Problem communicating with the broker.')
 
     def trial_run_with(self, implementation_map):
         hosts = [(self.hostname, self.port)]
