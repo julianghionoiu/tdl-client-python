@@ -14,10 +14,11 @@ logger.addHandler(logging.NullHandler())
 
 class Client(object):
     def __init__(self, hostname, port, username):
-        pass
+        self.hostname = hostname
+        self.port = port
 
     def go_live_with(self, implementation_map):
-        hosts = [('localhost', 21613)]
+        hosts = [(self.hostname, self.port)]
         conn = stomp.Connection(host_and_ports=hosts)
         conn.start()
         conn.connect(wait=True)
@@ -27,7 +28,7 @@ class Client(object):
         conn.disconnect()
 
     def trial_run_with(self, implementation_map):
-        hosts = [('localhost', 21613)]
+        hosts = [(self.hostname, self.port)]
         conn = stomp.Connection(host_and_ports=hosts)
         conn.start()
         conn.connect(wait=True)

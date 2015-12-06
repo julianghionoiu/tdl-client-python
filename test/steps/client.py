@@ -17,14 +17,17 @@ def create_the_queues(context):
     context.response_queue = context.broker.add_queue('test.resp')
     context.response_queue.purge()
     hostname = 'localhost'
-    stomp_port = '21613'
+    stomp_port = 21613
     username = 'test'
     context.client = Client(hostname, stomp_port, username)
 
 
 @given("the broker is not available")
 def client_with_wrong_broker(context):
-    pass
+    incorrect_hostname = 'abadhostname'
+    stomp_port = 21613
+    username = 'test'
+    context.client = Client(incorrect_hostname, stomp_port, username)
 
 
 @given("I receive the following requests")
@@ -125,6 +128,7 @@ def response_queue_unchanged(context):
 
 @then("I should get no exception")
 def i_should_get_no_exception(context):
+    # OBS if you get here there were no exceptions
     pass
 
 
