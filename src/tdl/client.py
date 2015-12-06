@@ -48,13 +48,12 @@ class HandlingStrategy(object):
     def __init__(self, implementation_map):
         self.implementation_map = implementation_map
 
-    @staticmethod
-    def respond_to(implementation_map, message):
+    def respond_to(self, message):
         decoded_message = json.loads(message)
         method = decoded_message['method']
         params = decoded_message['params']
         id = decoded_message['id']
-        implementation = implementation_map[method]
+        implementation = self.implementation_map[method]
         try:
            result = implementation(params)
         except Exception as e:
@@ -73,14 +72,14 @@ class HandlingStrategy(object):
 
 class RespondToAllRequests(HandlingStrategy):
     def process_next_message_from(self, remote_broker, headers, message):
-        response = self.respond_to(self.implementation_map, message)
+        response = self.respond_to(message)
         if response is not None:
             remote_broker.acknowledge(headers)
             remote_broker.publish(response)
 
 class PeekAtFirstRequest(HandlingStrategy):
     def process_next_message_from(self, remote_broker, headers, message):
-        self.respond_to(self.implementation_map, message)
+        self.respond_to(message)
 
 class Listener(stomp.ConnectionListener):
     def __init__(self, conn, handling_strategy):
