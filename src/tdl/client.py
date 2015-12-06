@@ -22,10 +22,9 @@ class Client(object):
             conn = stomp.Connection(host_and_ports=hosts)
             conn.start()
             handling_strategy = RespondToAllRequests(implementation_map)
-            listener = Listener(conn, handling_strategy)
             conn.connect(wait=True)
             remote_broker = RemoteBroker(conn)
-            remote_broker.subscribe(listener)
+            remote_broker.subscribe(handling_strategy)
             time.sleep(1)
             conn.disconnect()
         except Exception as e:
@@ -37,9 +36,8 @@ class Client(object):
         conn.start()
         conn.connect(wait=True)
         handling_strategy = PeekAtFirstRequest(implementation_map)
-        listener = Listener(conn, handling_strategy)
         remote_broker = RemoteBroker(conn)
-        remote_broker.subscribe(listener)
+        remote_broker.subscribe(handling_strategy)
         time.sleep(1)
         conn.disconnect()
 
@@ -105,6 +103,7 @@ class RemoteBroker(object):
             destination='test.resp'
         )
 
-    def subscribe(self, listener):
+    def subscribe(self, handling_strategy):
+        listener = Listener(self.conn, handling_strategy)
         self.conn.set_listener('listener', listener)
         self.conn.subscribe(destination='test.req', id=1, ack='client-individual')
