@@ -103,7 +103,6 @@ def the_client_should_not_display_to_console(context):
     print(context.table.headings[0])
     for row in context.table:
         print(row[0])
-    pass
 
 
 @then("the client should not consume any request")
