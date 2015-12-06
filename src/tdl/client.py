@@ -43,45 +43,49 @@ class Client(object):
 
 
 class Listener(stomp.ConnectionListener):
-   def __init__(self, conn, implementation_map):
+    def __init__(self, conn, implementation_map):
         self.conn = conn
+        self.remote_broker = RemoteBroker(self.conn)
         self.implementation_map = implementation_map
 
-   def respond_to(self, message):
-       decoded_message = json.loads(message)
-       method = decoded_message['method']
-       params = decoded_message['params']
-       id = decoded_message['id']
-       implementation = self.implementation_map[method]
-       try:
+    def on_message(self, headers, message):
+        self.process_next_message_from(headers, message)
+
+    def respond_to(self, message):
+        decoded_message = json.loads(message)
+        method = decoded_message['method']
+        params = decoded_message['params']
+        id = decoded_message['id']
+        implementation = self.implementation_map[method]
+        try:
            result = implementation(params)
-       except Exception as e:
+        except Exception as e:
            logger.info('The user implementation has thrown an exception: {}'.format(e.message))
            result = None
-       params_str = ", ".join([str(p) for p in params])
-       print('id = {id}, req = {method}({params}), resp = {result}'.format(id=id, method=method, params=params_str,
+        params_str = ", ".join([str(p) for p in params])
+        print('id = {id}, req = {method}({params}), resp = {result}'.format(id=id, method=method, params=params_str,
                                                                            result=result))
-       if result is not None:
+        if result is not None:
             response = OrderedDict([
                 ('result', result),
                 ('error', None),
                 ('id', id),
                 ])
-       return response
+        return response
 
 
 class MyListener(Listener):
-    def on_message(self, headers, message):
+    def process_next_message_from(self, headers, message):
         response = self.respond_to(message)
         if response is not None:
-            remote_broker = RemoteBroker(self.conn)
-            remote_broker.acknowledge(headers)
-            remote_broker.publish(response)
+            self.remote_broker.acknowledge(headers)
+            self.remote_broker.publish(response)
 
 
 class PeekListener(Listener):
-    def on_message(self, headers, message):
+    def process_next_message_from(self, headers, message):
         self.respond_to(message)
+
 
 class RemoteBroker(object):
     def __init__(self, conn):
