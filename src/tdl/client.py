@@ -17,29 +17,21 @@ class Client(object):
         self.port = port
 
     def go_live_with(self, implementation_map):
-        hosts = [(self.hostname, self.port)]
         try:
-            conn = stomp.Connection(host_and_ports=hosts)
-            conn.start()
+            remote_broker = RemoteBroker(self.hostname, self.port)
             handling_strategy = RespondToAllRequests(implementation_map)
-            conn.connect(wait=True)
-            remote_broker = RemoteBroker(conn)
             remote_broker.subscribe(handling_strategy)
             time.sleep(1)
-            conn.disconnect()
+            remote_broker.close()
         except Exception as e:
             logger.exception('Problem communicating with the broker.')
 
     def trial_run_with(self, implementation_map):
-        hosts = [(self.hostname, self.port)]
-        conn = stomp.Connection(host_and_ports=hosts)
-        conn.start()
-        conn.connect(wait=True)
+        remote_broker = RemoteBroker(self.hostname, self.port)
         handling_strategy = PeekAtFirstRequest(implementation_map)
-        remote_broker = RemoteBroker(conn)
         remote_broker.subscribe(handling_strategy)
         time.sleep(1)
-        conn.disconnect()
+        remote_broker.close()
 
 
 class HandlingStrategy(object):
@@ -80,9 +72,8 @@ class PeekAtFirstRequest(HandlingStrategy):
         self.respond_to(message)
 
 class Listener(stomp.ConnectionListener):
-    def __init__(self, conn, handling_strategy):
-        self.conn = conn
-        self.remote_broker = RemoteBroker(self.conn)
+    def __init__(self, remote_broker, handling_strategy):
+        self.remote_broker = remote_broker
         self.handling_strategy = handling_strategy
 
     def on_message(self, headers, message):
@@ -91,8 +82,11 @@ class Listener(stomp.ConnectionListener):
 
 
 class RemoteBroker(object):
-    def __init__(self, conn):
-        self.conn = conn
+    def __init__(self, hostname, port):
+        hosts = [(hostname, port)]
+        self.conn = stomp.Connection(host_and_ports=hosts)
+        self.conn.start()
+        self.conn.connect(wait=True)
 
     def acknowledge(self, headers):
         self.conn.ack(headers['message-id'], headers['subscription'])
@@ -104,6 +98,9 @@ class RemoteBroker(object):
         )
 
     def subscribe(self, handling_strategy):
-        listener = Listener(self.conn, handling_strategy)
+        listener = Listener(self, handling_strategy)
         self.conn.set_listener('listener', listener)
         self.conn.subscribe(destination='test.req', id=1, ack='client-individual')
+
+    def close(self):
+        self.conn.disconnect()
