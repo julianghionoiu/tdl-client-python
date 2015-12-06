@@ -17,21 +17,21 @@ class Client(object):
         self.port = port
 
     def go_live_with(self, implementation_map):
+        handling_strategy = RespondToAllRequests(implementation_map)
+        self.run(handling_strategy)
+
+    def trial_run_with(self, implementation_map):
+        handling_strategy = PeekAtFirstRequest(implementation_map)
+        self.run(handling_strategy)
+
+    def run(self, handling_strategy):
         try:
             remote_broker = RemoteBroker(self.hostname, self.port)
-            handling_strategy = RespondToAllRequests(implementation_map)
             remote_broker.subscribe(handling_strategy)
             time.sleep(1)
             remote_broker.close()
         except Exception as e:
             logger.exception('Problem communicating with the broker.')
-
-    def trial_run_with(self, implementation_map):
-        remote_broker = RemoteBroker(self.hostname, self.port)
-        handling_strategy = PeekAtFirstRequest(implementation_map)
-        remote_broker.subscribe(handling_strategy)
-        time.sleep(1)
-        remote_broker.close()
 
 
 class HandlingStrategy(object):
