@@ -64,16 +64,14 @@ class MyListener(stomp.ConnectionListener):
         params_str = ", ".join([str(p) for p in params])
         print('id = {id}, req = {method}({params}), resp = {result}'.format(id=id, method=method, params=params_str, result=result))
         if result is not None:
-            self.conn.ack(headers['message-id'], headers['subscription'])
+            remote_broker = RemoteBroker(self.conn)
+            remote_broker.acknowledge(headers)
             response = OrderedDict([
                 ('result', result),
                 ('error', None),
                 ('id', id),
             ])
-            self.conn.send(
-                body=json.dumps(response, separators=(',', ':')),
-                destination='test.resp'
-            )
+            remote_broker.publish(response)
 
 class PeekListener(stomp.ConnectionListener):
     def __init__(self, conn, implementation_map):
@@ -94,3 +92,17 @@ class PeekListener(stomp.ConnectionListener):
             result = None
         params_str = ", ".join([str(p) for p in params])
         print('id = {id}, req = {method}({params}), resp = {result}'.format(id=id, method=method, params=params_str, result=result))
+
+
+class RemoteBroker(object):
+    def __init__(self, conn):
+        self.conn = conn
+
+    def acknowledge(self, headers):
+        self.conn.ack(headers['message-id'], headers['subscription'])
+
+    def publish(self, response):
+        self.conn.send(
+            body=json.dumps(response, separators=(',', ':')),
+            destination='test.resp'
+        )
