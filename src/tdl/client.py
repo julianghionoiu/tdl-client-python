@@ -23,10 +23,10 @@ class Client(object):
         try:
             conn = stomp.Connection(host_and_ports=hosts)
             conn.start()
-            conn.connect(wait=True)
             listener = MyListener(conn, implementation_map)
-            conn.set_listener('listener', listener)
-            conn.subscribe(destination='test.req', id=1, ack='client-individual')
+            conn.connect(wait=True)
+            remote_broker = RemoteBroker(conn)
+            remote_broker.subscribe(listener)
             time.sleep(1)
             conn.disconnect()
         except Exception as e:
@@ -106,3 +106,7 @@ class RemoteBroker(object):
             body=json.dumps(response, separators=(',', ':')),
             destination='test.resp'
         )
+
+    def subscribe(self, listener):
+        self.conn.set_listener('listener', listener)
+        self.conn.subscribe(destination='test.req', id=1, ack='client-individual')
