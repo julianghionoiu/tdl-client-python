@@ -1,13 +1,11 @@
 __author__ = 'tdpreece'
 __author__ = 'tdpreece'
 import logging
-import sys
-import stomp
 import time
 import json
-
 from collections import OrderedDict
 
+import stomp
 
 logger = logging.getLogger('tdl.client')
 logger.addHandler(logging.NullHandler())
@@ -44,25 +42,31 @@ class Client(object):
         conn.disconnect()
 
 
-class MyListener(stomp.ConnectionListener):
-    def __init__(self, conn, implementation_map):
+class Listener(stomp.ConnectionListener):
+   def __init__(self, conn, implementation_map):
         self.conn = conn
         self.implementation_map = implementation_map
 
-    def on_message(self, headers, message):
-        decoded_message = json.loads(message)
-        method = decoded_message['method']
-        params = decoded_message['params']
-        id = decoded_message['id']
+   def on_message_common(self, message):
+       decoded_message = json.loads(message)
+       method = decoded_message['method']
+       params = decoded_message['params']
+       id = decoded_message['id']
+       implementation = self.implementation_map[method]
+       try:
+           result = implementation(params)
+       except Exception as e:
+           logger.info('The user implementation has thrown an exception: {}'.format(e.message))
+           result = None
+       params_str = ", ".join([str(p) for p in params])
+       print('id = {id}, req = {method}({params}), resp = {result}'.format(id=id, method=method, params=params_str,
+                                                                           result=result))
+       return id, result
 
-        implementation = self.implementation_map[method]
-        try:
-            result = implementation(params)
-        except Exception as e:
-            logger.info('The user implementation has thrown an exception: {}'.format(e.message))
-            result = None
-        params_str = ", ".join([str(p) for p in params])
-        print('id = {id}, req = {method}({params}), resp = {result}'.format(id=id, method=method, params=params_str, result=result))
+
+class MyListener(Listener):
+    def on_message(self, headers, message):
+        id, result = self.on_message_common(message)
         if result is not None:
             remote_broker = RemoteBroker(self.conn)
             remote_broker.acknowledge(headers)
@@ -73,26 +77,10 @@ class MyListener(stomp.ConnectionListener):
             ])
             remote_broker.publish(response)
 
-class PeekListener(stomp.ConnectionListener):
-    def __init__(self, conn, implementation_map):
-        self.conn = conn
-        self.implementation_map = implementation_map
 
+class PeekListener(Listener):
     def on_message(self, headers, message):
-        decoded_message = json.loads(message)
-        method = decoded_message['method']
-        params = decoded_message['params']
-        id = decoded_message['id']
-
-        implementation = self.implementation_map[method]
-        try:
-            result = implementation(params)
-        except Exception as e:
-            logger.info('The user implementation has thrown an exception: {}'.format(e.message))
-            result = None
-        params_str = ", ".join([str(p) for p in params])
-        print('id = {id}, req = {method}({params}), resp = {result}'.format(id=id, method=method, params=params_str, result=result))
-
+        id, result = self.on_message_common(message)
 
 class RemoteBroker(object):
     def __init__(self, conn):
