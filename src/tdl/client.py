@@ -49,7 +49,7 @@ class Listener(stomp.ConnectionListener):
         self.implementation_map = implementation_map
 
     def on_message(self, headers, message):
-        self.process_next_message_from(headers, message)
+        self.process_next_message_from(self.implementation_map, self.remote_broker, headers, message)
 
     @staticmethod
     def respond_to(implementation_map, message):
@@ -76,16 +76,18 @@ class Listener(stomp.ConnectionListener):
 
 
 class MyListener(Listener):
-    def process_next_message_from(self, headers, message):
-        response = self.respond_to(self.implementation_map, message)
+    @staticmethod
+    def process_next_message_from(implementation_map, remote_broker, headers, message):
+        response = Listener.respond_to(implementation_map, message)
         if response is not None:
-            self.remote_broker.acknowledge(headers)
-            self.remote_broker.publish(response)
+            remote_broker.acknowledge(headers)
+            remote_broker.publish(response)
 
 
 class PeekListener(Listener):
-    def process_next_message_from(self, headers, message):
-        self.respond_to(self.implementation_map, message)
+    @staticmethod
+    def process_next_message_from(implementation_map, remote_broker, headers, message):
+        Listener.respond_to(implementation_map, message)
 
 
 class RemoteBroker(object):
