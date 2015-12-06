@@ -51,12 +51,13 @@ class Listener(stomp.ConnectionListener):
     def on_message(self, headers, message):
         self.process_next_message_from(headers, message)
 
-    def respond_to(self, message):
+    @staticmethod
+    def respond_to(implementation_map, message):
         decoded_message = json.loads(message)
         method = decoded_message['method']
         params = decoded_message['params']
         id = decoded_message['id']
-        implementation = self.implementation_map[method]
+        implementation = implementation_map[method]
         try:
            result = implementation(params)
         except Exception as e:
@@ -76,7 +77,7 @@ class Listener(stomp.ConnectionListener):
 
 class MyListener(Listener):
     def process_next_message_from(self, headers, message):
-        response = self.respond_to(message)
+        response = self.respond_to(self.implementation_map, message)
         if response is not None:
             self.remote_broker.acknowledge(headers)
             self.remote_broker.publish(response)
@@ -84,7 +85,7 @@ class MyListener(Listener):
 
 class PeekListener(Listener):
     def process_next_message_from(self, headers, message):
-        self.respond_to(message)
+        self.respond_to(self.implementation_map, message)
 
 
 class RemoteBroker(object):
