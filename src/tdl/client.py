@@ -38,8 +38,8 @@ class Client(object):
         conn.start()
         conn.connect(wait=True)
         listener = PeekListener(conn, implementation_map)
-        conn.set_listener('listener', listener)
-        conn.subscribe(destination='test.req', id=1, ack='client-individual')
+        remote_broker = RemoteBroker(conn)
+        remote_broker.subscribe(listener)
         time.sleep(1)
         conn.disconnect()
 
