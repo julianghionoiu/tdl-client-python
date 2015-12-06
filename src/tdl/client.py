@@ -48,27 +48,6 @@ class HandlingStrategy(object):
     def __init__(self, implementation_map):
         self.implementation_map = implementation_map
 
-
-class RespondToAllRequests(HandlingStrategy):
-    def process_next_message_from(self, remote_broker, headers, message):
-        response = Listener.respond_to(self.implementation_map, message)
-        if response is not None:
-            remote_broker.acknowledge(headers)
-            remote_broker.publish(response)
-
-class PeekAtFirstRequest(HandlingStrategy):
-    def process_next_message_from(self, remote_broker, headers, message):
-        Listener.respond_to(self.implementation_map, message)
-
-class Listener(stomp.ConnectionListener):
-    def __init__(self, conn, handling_strategy):
-        self.conn = conn
-        self.remote_broker = RemoteBroker(self.conn)
-        self.handling_strategy = handling_strategy
-
-    def on_message(self, headers, message):
-        self.handling_strategy.process_next_message_from(self.remote_broker, headers, message)
-
     @staticmethod
     def respond_to(implementation_map, message):
         decoded_message = json.loads(message)
@@ -91,6 +70,27 @@ class Listener(stomp.ConnectionListener):
                 ('id', id),
                 ])
         return response
+
+class RespondToAllRequests(HandlingStrategy):
+    def process_next_message_from(self, remote_broker, headers, message):
+        response = self.respond_to(self.implementation_map, message)
+        if response is not None:
+            remote_broker.acknowledge(headers)
+            remote_broker.publish(response)
+
+class PeekAtFirstRequest(HandlingStrategy):
+    def process_next_message_from(self, remote_broker, headers, message):
+        self.respond_to(self.implementation_map, message)
+
+class Listener(stomp.ConnectionListener):
+    def __init__(self, conn, handling_strategy):
+        self.conn = conn
+        self.remote_broker = RemoteBroker(self.conn)
+        self.handling_strategy = handling_strategy
+
+    def on_message(self, headers, message):
+        self.handling_strategy.process_next_message_from(self.remote_broker, headers, message)
+
 
 
 class RemoteBroker(object):
