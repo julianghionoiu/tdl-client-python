@@ -43,20 +43,20 @@ class Client(object):
         time.sleep(1)
         conn.disconnect()
 
-class RespondToAllRequests(object):
+
+class HandlingStrategy(object):
     def __init__(self, implementation_map):
         self.implementation_map = implementation_map
 
+
+class RespondToAllRequests(HandlingStrategy):
     def process_next_message_from(self, remote_broker, headers, message):
         response = Listener.respond_to(self.implementation_map, message)
         if response is not None:
             remote_broker.acknowledge(headers)
             remote_broker.publish(response)
 
-class PeekAtFirstRequest(object):
-    def __init__(self, implementation_map):
-        self.implementation_map = implementation_map
-
+class PeekAtFirstRequest(HandlingStrategy):
     def process_next_message_from(self, remote_broker, headers, message):
         Listener.respond_to(self.implementation_map, message)
 
