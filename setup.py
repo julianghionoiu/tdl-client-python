@@ -6,6 +6,7 @@ setup(
     name = 'tdl-client-python',
     packages = ['tdl'],
     package_dir = {'': 'src'},
+    install_requires = ['stomp.py==4.1.5'],
     version = VERSION,
     description = 'tdl-client-python',
     author = 'Tim Preece, Julian Ghionoiu',
