@@ -10,6 +10,8 @@ Your virtualenv will be created in `./devenv/`
 
 Running all the tests,
 ```
+git submodule update --init
+./broker/activemq-wrapper start
 tox
 ```
 
