@@ -62,3 +62,6 @@ target/
 
 # Vim swap files
 *.swp
+
+# development virtualenv
+devenv/
