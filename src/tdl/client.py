@@ -15,6 +15,7 @@ class Client(object):
     def __init__(self, hostname, port, username):
         self.hostname = hostname
         self.port = port
+        self.username = username
 
     def go_live_with(self, implementation_map):
         handling_strategy = RespondToAllRequests(implementation_map)
@@ -26,7 +27,7 @@ class Client(object):
 
     def run(self, handling_strategy):
         try:
-            remote_broker = RemoteBroker(self.hostname, self.port)
+            remote_broker = RemoteBroker(self.hostname, self.port, self.username)
             remote_broker.subscribe(handling_strategy)
             time.sleep(1)
             remote_broker.close()
@@ -82,11 +83,12 @@ class Listener(stomp.ConnectionListener):
 
 
 class RemoteBroker(object):
-    def __init__(self, hostname, port):
+    def __init__(self, hostname, port, username):
         hosts = [(hostname, port)]
         self.conn = stomp.Connection(host_and_ports=hosts)
         self.conn.start()
         self.conn.connect(wait=True)
+        self.username = username
 
     def acknowledge(self, headers):
         self.conn.ack(headers['message-id'], headers['subscription'])
@@ -94,13 +96,17 @@ class RemoteBroker(object):
     def publish(self, response):
         self.conn.send(
             body=json.dumps(response, separators=(',', ':')),
-            destination='test.resp'
+            destination='{}.resp'.format(self.username)
         )
 
     def subscribe(self, handling_strategy):
         listener = Listener(self, handling_strategy)
         self.conn.set_listener('listener', listener)
-        self.conn.subscribe(destination='test.req', id=1, ack='client-individual')
+        self.conn.subscribe(
+            destination='{}.req'.format(self.username),
+            id=1,
+            ack='client-individual'
+        )
 
     def close(self):
         self.conn.disconnect()
