@@ -12,13 +12,13 @@ use_step_matcher("re")
 
 @given("I start with a clean broker")
 def create_the_queues(context):
-    context.request_queue = context.broker.add_queue('test.req')
+    username = 'test'
+    context.request_queue = context.broker.add_queue('{}.req'.format(username))
     context.request_queue.purge()
-    context.response_queue = context.broker.add_queue('test.resp')
+    context.response_queue = context.broker.add_queue('{}.resp'.format(username))
     context.response_queue.purge()
     hostname = 'localhost'
     stomp_port = 21613
-    username = 'test'
     context.client = Client(hostname, stomp_port, username)
 
 
