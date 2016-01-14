@@ -43,7 +43,7 @@ def initialize_request_queue(context):
 
 def get_implementation(implementation_name):
     test_implementations = {
-        'adds two numbers': lambda params: int(params[0]) + int(params[1]),
+        'add two numbers': lambda params: int(params[0]) + int(params[1]),
         'increment number': lambda params: int(params[0]) + 1,
         'returns null': lambda params: None,
         'throws exception': lambda params: raise_(Exception('faulty user code')),
@@ -56,7 +56,7 @@ def get_implementation(implementation_name):
         raise KeyError('Not a valid implementation reference: "' + implementation_name + "\"")
 
 
-@when("I go live with the following implementations")
+@when("I go live with the following processing rules")
 def step_impl(context):
     implementation_map = {}
     for row in table_as_list_of_rows(context):
@@ -134,7 +134,7 @@ def i_should_get_no_exception(context):
 
 # ~~~~ Helpers
 def table_as_list_of_rows(context):
-    return [context.table.headings] + [row for row in context.table]
+    return [row for row in context.table]
 
 
 def table_as_list(context):
