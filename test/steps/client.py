@@ -60,7 +60,7 @@ def get_implementation(implementation_name):
 def step_impl(context):
     implementation_map = {}
     for row in table_as_list_of_rows(context):
-        implementation_map[row[0]] = get_implementation(row[1])
+        implementation_map[row[0]] = {'test_implementation': get_implementation(row[1]), 'action': row[2]}
     context.client.go_live_with(implementation_map)
 
 

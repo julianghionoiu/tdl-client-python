@@ -21,10 +21,6 @@ class Client(object):
         handling_strategy = RespondToAllRequests(implementation_map)
         self.run(handling_strategy)
 
-    def trial_run_with(self, implementation_map):
-        handling_strategy = PeekAtFirstRequest(implementation_map)
-        self.run(handling_strategy)
-
     def run(self, handling_strategy):
         try:
             remote_broker = RemoteBroker(self.hostname, self.port, self.username)
@@ -35,16 +31,16 @@ class Client(object):
             logger.exception('Problem communicating with the broker.')
 
 
-class HandlingStrategy(object):
+class RespondToAllRequests(object):
     def __init__(self, implementation_map):
         self.implementation_map = implementation_map
 
-    def respond_to(self, message):
+    def process_next_message_from(self, remote_broker, headers, message):
         decoded_message = json.loads(message)
         method = decoded_message['method']
         params = decoded_message['params']
         id = decoded_message['id']
-        implementation = self.implementation_map[method]
+        implementation = self.implementation_map[method]['test_implementation']
         try:
            result = implementation(params)
         except Exception as e:
@@ -59,18 +55,16 @@ class HandlingStrategy(object):
                 ('error', None),
                 ('id', id),
                 ])
-        return response
-
-class RespondToAllRequests(HandlingStrategy):
-    def process_next_message_from(self, remote_broker, headers, message):
-        response = self.respond_to(message)
-        if response is not None:
+        if self.implementation_map[method]['action'] == 'publish' and response is not None:
             remote_broker.acknowledge(headers)
             remote_broker.publish(response)
 
-class PeekAtFirstRequest(HandlingStrategy):
-    def process_next_message_from(self, remote_broker, headers, message):
-        self.respond_to(message)
+        print("method={}".format(method))
+
+        if 'stop' in self.implementation_map[method]['action']:
+            remote_broker.conn.unsubscribe(1)
+            remote_broker.conn.remove_listener('listener')
+
 
 class Listener(stomp.ConnectionListener):
     def __init__(self, remote_broker, handling_strategy):
