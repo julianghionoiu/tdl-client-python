@@ -65,3 +65,6 @@ target/
 
 # development virtualenv
 devenv/
+
+# Rope project folder
+.ropeproject
