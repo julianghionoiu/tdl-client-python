@@ -46,19 +46,20 @@ class RespondToAllRequests(object):
         except Exception as e:
            logger.info('The user implementation has thrown an exception: {}'.format(e.message))
            result = None
+        else:
+            response = OrderedDict([
+                ('result', result),
+                ('error', None),
+                ('id', id),
+                ])
+            if 'publish' in self.implementation_map[method]['action']:
+                remote_broker.acknowledge(headers)
+                remote_broker.publish(response)
+
         params_str = ", ".join([str(p) for p in params])
-        print('id = {id}, req = {method}({params}), resp = {result}'.format(id=id, method=method, params=params_str,
-                                                                           result=result))
-        response = OrderedDict([
-            ('result', result),
-            ('error', None),
-            ('id', id),
-            ])
-
-        if 'publish' in self.implementation_map[method]['action']:
-            remote_broker.acknowledge(headers)
-            remote_broker.publish(response)
-
+        resp_str = result if result is not None else 'empty (NOT PUBLISHED)'
+        print('id = {id}, req = {method}({params}), resp = {resp}'.format(id=id, method=method, params=params_str,
+                                                                           resp=resp_str))
         if 'stop' in self.implementation_map[method]['action']:
             remote_broker.conn.unsubscribe(1)
             remote_broker.conn.remove_listener('listener')

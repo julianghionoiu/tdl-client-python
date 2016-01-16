@@ -46,7 +46,7 @@ def get_implementation(implementation_name):
         'add two numbers': lambda params: int(params[0]) + int(params[1]),
         'increment number': lambda params: int(params[0]) + 1,
         'return null': lambda params: None,
-        'throws exception': lambda params: raise_(Exception('faulty user code')),
+        'throw exception': lambda params: raise_(Exception('faulty user code')),
         'some logic': lambda params: "ok",
     }
 
