@@ -49,15 +49,13 @@ class RespondToAllRequests(object):
         params_str = ", ".join([str(p) for p in params])
         print('id = {id}, req = {method}({params}), resp = {result}'.format(id=id, method=method, params=params_str,
                                                                            result=result))
-        if result is not None:
-            response = OrderedDict([
-                ('result', result),
-                ('error', None),
-                ('id', id),
-                ])
+        response = OrderedDict([
+            ('result', result),
+            ('error', None),
+            ('id', id),
+            ])
 
-        if 'publish' in self.implementation_map[method]['action'] \
-            and response is not None:
+        if 'publish' in self.implementation_map[method]['action']:
             remote_broker.acknowledge(headers)
             remote_broker.publish(response)
 

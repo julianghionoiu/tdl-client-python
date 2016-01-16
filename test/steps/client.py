@@ -45,7 +45,7 @@ def get_implementation(implementation_name):
     test_implementations = {
         'add two numbers': lambda params: int(params[0]) + int(params[1]),
         'increment number': lambda params: int(params[0]) + 1,
-        'returns null': lambda params: None,
+        'return null': lambda params: None,
         'throws exception': lambda params: raise_(Exception('faulty user code')),
         'some logic': lambda params: "ok",
     }
