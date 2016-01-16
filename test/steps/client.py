@@ -96,7 +96,7 @@ def the_client_should_display_to_console(context):
     ) 
     for row in context.table:
         assert_that(
-            context.stdout,
+            context.stdout_capture.getvalue(),
             contains_string(row[0])
         ) 
 
