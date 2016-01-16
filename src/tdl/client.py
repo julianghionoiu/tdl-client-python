@@ -55,7 +55,9 @@ class RespondToAllRequests(object):
                 ('error', None),
                 ('id', id),
                 ])
-        if self.implementation_map[method]['action'] == 'publish' and response is not None:
+
+        if 'publish' in self.implementation_map[method]['action'] \
+            and response is not None:
             remote_broker.acknowledge(headers)
             remote_broker.publish(response)
 

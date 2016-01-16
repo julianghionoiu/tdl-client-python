@@ -116,6 +116,14 @@ def request_queue_unchanged(context):
         "Requests have been consumed"
     )
 
+@then(u'the client should consume first request')
+def step_impl(context):
+    assert_that(
+        context.request_queue.get_size(), 
+        is_(equal_to(context.request_count - 1)), 
+        "Wrong number of requests have been consumed."
+    )
+
 
 @step("the client should not publish any response")
 def response_queue_unchanged(context):
