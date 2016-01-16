@@ -59,8 +59,6 @@ class RespondToAllRequests(object):
             remote_broker.acknowledge(headers)
             remote_broker.publish(response)
 
-        print("method={}".format(method))
-
         if 'stop' in self.implementation_map[method]['action']:
             remote_broker.conn.unsubscribe(1)
             remote_broker.conn.remove_listener('listener')
