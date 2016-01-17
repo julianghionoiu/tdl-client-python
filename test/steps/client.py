@@ -43,10 +43,10 @@ def initialize_request_queue(context):
 
 def get_implementation(implementation_name):
     test_implementations = {
-        'adds two numbers': lambda params: int(params[0]) + int(params[1]),
+        'add two numbers': lambda params: int(params[0]) + int(params[1]),
         'increment number': lambda params: int(params[0]) + 1,
-        'returns null': lambda params: None,
-        'throws exception': lambda params: raise_(Exception('faulty user code')),
+        'return null': lambda params: None,
+        'throw exception': lambda params: raise_(Exception('faulty user code')),
         'some logic': lambda params: "ok",
     }
 
@@ -56,11 +56,11 @@ def get_implementation(implementation_name):
         raise KeyError('Not a valid implementation reference: "' + implementation_name + "\"")
 
 
-@when("I go live with the following implementations")
+@when("I go live with the following processing rules")
 def step_impl(context):
     implementation_map = {}
     for row in table_as_list_of_rows(context):
-        implementation_map[row[0]] = get_implementation(row[1])
+        implementation_map[row[0]] = {'test_implementation': get_implementation(row[1]), 'action': row[2]}
     context.client.go_live_with(implementation_map)
 
 
@@ -96,7 +96,7 @@ def the_client_should_display_to_console(context):
     ) 
     for row in context.table:
         assert_that(
-            context.stdout,
+            context.stdout_capture.getvalue(),
             contains_string(row[0])
         ) 
 
@@ -114,6 +114,14 @@ def request_queue_unchanged(context):
         context.request_queue.get_size(), 
         is_(equal_to(context.request_count)), 
         "Requests have been consumed"
+    )
+
+@then(u'the client should consume first request')
+def step_impl(context):
+    assert_that(
+        context.request_queue.get_size(), 
+        is_(equal_to(context.request_count - 1)), 
+        "Wrong number of requests have been consumed."
     )
 
 
@@ -134,7 +142,7 @@ def i_should_get_no_exception(context):
 
 # ~~~~ Helpers
 def table_as_list_of_rows(context):
-    return [context.table.headings] + [row for row in context.table]
+    return [row for row in context.table]
 
 
 def table_as_list(context):
