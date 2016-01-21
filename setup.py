@@ -1,6 +1,9 @@
 from distutils.core import setup
 
-VERSION = '0.0.3'
+from previous_version import PREVIOUS_VERSION
+
+VERSION = '0.6.0'
+print PREVIOUS_VERSION
 
 setup(
     name = 'tdl-client-python',
