@@ -45,7 +45,7 @@ class RespondToAllRequests(object):
            result = implementation(params)
         except Exception as e:
            logger.info('The user implementation has thrown an exception: {}'.format(e.message))
-           result = 'empty (NOT PUBLISHED)'
+           result = 'empty, (NOT PUBLISHED)'
         else:
             response = OrderedDict([
                 ('result', result),
@@ -56,7 +56,7 @@ class RespondToAllRequests(object):
                 remote_broker.acknowledge(headers)
                 remote_broker.publish(response)
             else:
-                result = '{} (NOT PUBLISHED)'.format(result)
+                result = '{}, (NOT PUBLISHED)'.format(result)
 
         params_str = ", ".join([str(p) for p in params])
         print('id = {id}, req = {method}({params}), resp = {result}'.format(id=id, method=method, params=params_str,
