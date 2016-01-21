@@ -1,3 +1,4 @@
+tox==2.3.1
 requests==2.7.0
 behave==1.2.5
 PyHamcrest==1.8.5
