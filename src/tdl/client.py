@@ -37,7 +37,10 @@ class RespondToAllRequests(object):
         self.implementation_map = implementation_map
 
     def process_next_message_from(self, remote_broker, headers, message):
-        decoded_message = json.loads(message)
+        try:
+            decoded_message = json.loads(message)
+        except:
+            print('Invalid message format')
         method = decoded_message['method']
         params = decoded_message['params']
         id = decoded_message['id']
