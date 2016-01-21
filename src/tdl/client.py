@@ -28,6 +28,7 @@ class Client(object):
             time.sleep(1)
             remote_broker.close()
         except Exception as e:
+            print('There was a problem processing messages')
             logger.exception('Problem communicating with the broker.')
 
 
