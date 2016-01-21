@@ -40,6 +40,14 @@ class RespondToAllRequests(object):
         method = decoded_message['method']
         params = decoded_message['params']
         id = decoded_message['id']
+        if method not in self.implementation_map:
+            self.print_user_message(
+                params,
+                'error = method "{}" did not match any processing rule, (NOT PUBLISHED)'.format(method),
+                id,
+                method
+            )
+                    
         implementation = self.implementation_map[method]['test_implementation']
         try:
            result = implementation(params)
@@ -59,12 +67,15 @@ class RespondToAllRequests(object):
             else:
                 user_result_message = 'resp = {}, (NOT PUBLISHED)'.format(result)
 
-        params_str = ", ".join([str(p) for p in params])
-        print('id = {id}, req = {method}({params}), {user_result_message}'.format(id=id, method=method, params=params_str,
-                                                                           user_result_message=user_result_message))
+        self.print_user_message(params, user_result_message, id, method)
         if 'stop' in self.implementation_map[method]['action']:
             remote_broker.conn.unsubscribe(1)
             remote_broker.conn.remove_listener('listener')
+
+    def print_user_message(self, params, user_result_message, id, method):
+        params_str = ", ".join([str(p) for p in params])
+        print('id = {id}, req = {method}({params}), {user_result_message}'.format(id=id, method=method, params=params_str,
+                                                                           user_result_message=user_result_message))
 
 
 class Listener(stomp.ConnectionListener):
