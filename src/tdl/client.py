@@ -95,7 +95,7 @@ class Listener(stomp.ConnectionListener):
 class RemoteBroker(object):
     def __init__(self, hostname, port, username):
         hosts = [(hostname, port)]
-        self.conn = stomp.Connection(host_and_ports=hosts)
+        self.conn = stomp.Connection(host_and_ports=hosts, timeout=10)
         self.conn.start()
         self.conn.connect(wait=True)
         self.username = username

@@ -24,8 +24,8 @@ def create_the_queues(context):
 
 @given("the broker is not available")
 def client_with_wrong_broker(context):
-    incorrect_hostname = 'abadhostname'
-    stomp_port = 21613
+    incorrect_hostname = 'localhost'
+    stomp_port = 11613
     username = 'test'
     context.client = Client(incorrect_hostname, stomp_port, username)
 
