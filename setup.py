@@ -13,7 +13,6 @@ def increment(self):
     parts = list(self.version)
     parts[-1] += 1
     string_repr = string.join(map(str, parts), '.')
-    print string_repr
     return StrictVersion(string_repr)
 
 
