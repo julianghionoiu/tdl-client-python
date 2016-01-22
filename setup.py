@@ -3,7 +3,9 @@ from setuptools import setup
 from distutils.version import StrictVersion
 from previous_version import PREVIOUS_VERSION
 import subprocess
+from subprocess import CalledProcessError
 import os
+import sys
 
 
 # ~~~~~~ Compute version
@@ -19,10 +21,14 @@ def increment(self):
 StrictVersion.increment = increment
 
 # Get Spec version from Git
-package_directory = os.path.dirname(os.path.abspath(__file__))
-spec_folder = os.path.join(package_directory, 'test', 'features', '.git')
-major_minor_version = subprocess.check_output(["git", "--git-dir", spec_folder, "describe", "--all"]).split('\n').pop(
-        0).split("v").pop(1)
+try:
+    package_directory = os.path.dirname(os.path.abspath(__file__))
+    spec_folder = os.path.join(package_directory, 'test', 'features', '.git')
+    major_minor_version = subprocess.check_output(["git", "--git-dir", spec_folder, "describe", "--all"]).split('\n').pop(
+            0).split("v").pop(1)
+except BaseException as e:
+    major_minor_version = "0.0"
+    print "Unexpected error:", str(e)
 # print "major_minor_version = " + str(major_minor_version)
 
 # Compute next version
