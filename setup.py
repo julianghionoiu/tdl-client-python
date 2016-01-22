@@ -3,10 +3,7 @@ from setuptools import setup
 from distutils.version import StrictVersion
 from previous_version import PREVIOUS_VERSION
 import subprocess
-from subprocess import CalledProcessError
 import os
-import sys
-
 
 # ~~~~~~ Compute version
 
