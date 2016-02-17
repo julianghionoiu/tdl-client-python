@@ -47,7 +47,7 @@ class RespondToAllRequests(object):
         if method not in self.implementation_map:
             self.print_user_message(
                 params,
-                'error = method "{}" did not match any processing rule, (NOT PUBLISHED)'.format(method),
+                'error = "method \'{}\' did not match any processing rule", (NOT PUBLISHED)'.format(method),
                 id,
                 method
             )
@@ -58,7 +58,7 @@ class RespondToAllRequests(object):
            user_result_message = 'resp = {}'.format(result) 
         except Exception as e:
            logger.info('The user implementation has thrown an exception: {}'.format(e.message))
-           user_result_message = 'error = user implementation raised exception, (NOT PUBLISHED)'
+           user_result_message = 'error = "user implementation raised exception", (NOT PUBLISHED)'
         else:
             response = OrderedDict([
                 ('result', result),
