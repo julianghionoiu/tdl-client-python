@@ -46,30 +46,30 @@ class RespondToAllRequests(object):
         id = decoded_message['id']
         if method not in self.implementation_map:
             self.print_user_message(
-                params,
-                'error = "method \'{}\' did not match any processing rule", (NOT PUBLISHED)'.format(method),
-                id,
-                method
+                    params,
+                    'error = "method \'{}\' did not match any processing rule", (NOT PUBLISHED)'.format(method),
+                    id,
+                    method
             )
-                    
+
         implementation = self.implementation_map[method]['test_implementation']
         try:
-           result = implementation(params)
-           user_result_message = 'resp = {}'.format(result) 
+            result = implementation(params)
+            user_result_message = 'resp = {}'.format(self.get_parameter_msg(result))
         except Exception as e:
-           logger.info('The user implementation has thrown an exception: {}'.format(e.message))
-           user_result_message = 'error = "user implementation raised exception", (NOT PUBLISHED)'
+            logger.info('The user implementation has thrown an exception: {}'.format(e.message))
+            user_result_message = 'error = "user implementation raised exception", (NOT PUBLISHED)'
         else:
             response = OrderedDict([
                 ('result', result),
                 ('error', None),
                 ('id', id),
-                ])
+            ])
             if 'publish' in self.implementation_map[method]['action']:
                 remote_broker.acknowledge(headers)
                 remote_broker.publish(response)
             else:
-                user_result_message = 'resp = {}, (NOT PUBLISHED)'.format(result)
+                user_result_message = 'resp = {}, (NOT PUBLISHED)'.format(self.get_parameter_msg(result))
 
         self.print_user_message(params, user_result_message, id, method)
         if 'stop' in self.implementation_map[method]['action']:
@@ -77,10 +77,20 @@ class RespondToAllRequests(object):
             remote_broker.conn.remove_listener('listener')
 
     def print_user_message(self, params, user_result_message, id, method):
-        params_str = ", ".join([str(p) for p in params])
+        params_str = ", ".join([self.get_parameter_msg(p) for p in params])
         print('id = {id}, req = {method}({params}), {user_result_message}'.format(id=id, method=method, params=params_str,
-                                                                           user_result_message=user_result_message))
+                                                                                  user_result_message=user_result_message))
 
+    @staticmethod
+    def get_parameter_msg(parameter):
+        if not isinstance(parameter, basestring):
+            return str(parameter)
+        lines = str(parameter).split('\n')
+        if len(lines) == 1:
+            return lines[0]
+        if len(lines) == 2:
+            return '"{} .. ( 1 more line )"'.format(lines[0])
+        return '"{} .. ( {} more lines )"'.format(lines[0], len(lines) - 1)
 
 class Listener(stomp.ConnectionListener):
     def __init__(self, remote_broker, handling_strategy):

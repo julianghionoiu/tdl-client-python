@@ -49,6 +49,7 @@ def get_implementation(implementation_name):
         'return null': lambda params: None,
         'throw exception': lambda params: raise_(Exception('faulty user code')),
         'some logic': lambda params: "ok",
+        'echo the request': lambda params: params[0],
     }
 
     if implementation_name in test_implementations:
