@@ -2,6 +2,7 @@ import sys
 
 from behave import given, step, then, use_step_matcher, when
 from hamcrest import assert_that, contains_string, equal_to, is_
+from cStringIO import StringIO
 from tdl.client import Client
 
 use_step_matcher("re")
@@ -61,20 +62,11 @@ def step_impl(context):
     implementation_map = {}
     for row in table_as_list_of_rows(context):
         implementation_map[row[0]] = {'test_implementation': get_implementation(row[1]), 'action': row[2]}
-    context.client.go_live_with(implementation_map)
 
-
-
-@when("I do a trial run with the following implementations")
-def step_impl(context):
-    implementation_map = {}
-    for row in table_as_list_of_rows(context):
-        implementation_map[row[0]] = get_implementation(row[1])
-    context.client.trial_run_with(implementation_map)
-
+    with Capturing() as context.stdout_capture:
+        context.client.go_live_with(implementation_map)
 
 # ~~~~~ Assertions
-
 
 @then("the client should consume all requests")
 def request_queue_empty(context):
@@ -151,3 +143,15 @@ def table_as_list(context):
 
 def raise_(ex):
     raise ex
+
+class Capturing(list):
+    def __enter__(self):
+        self._stdout = sys.stdout
+        sys.stdout = self._stringio = StringIO()
+        return self
+
+    def __exit__(self, *args):
+        sys.stdout = self._stdout
+
+    def getvalue(self):
+        return self._stringio.getvalue()
