@@ -18,8 +18,7 @@ class Client(object):
         self.username = username
 
     def go_live_with(self, implementation_map):
-        handling_strategy = RespondToAllRequests(implementation_map)
-        self.run(handling_strategy)
+        self.run(ApplyProcessingRules(implementation_map))
 
     def run(self, handling_strategy):
         try:
@@ -32,7 +31,7 @@ class Client(object):
             logger.exception('Problem communicating with the broker.')
 
 
-class RespondToAllRequests(object):
+class ApplyProcessingRules(object):
     def __init__(self, implementation_map):
         self.implementation_map = implementation_map
 
