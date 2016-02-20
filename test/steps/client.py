@@ -63,7 +63,10 @@ def get_implementation(implementation_name):
 def step_impl(context):
     processing_rules = ProcessingRules()
     for row in table_as_list_of_rows(context):
-        processing_rules.on(row[0]).call(get_implementation(row[1])).then(row[2])
+        method = row[0]
+        user_implementation = get_implementation(row[1])
+        action = row[2]
+        processing_rules.on(method).call(user_implementation).then(action)
 
     with Capturing() as context.stdout_capture:
         context.client.go_live_with(processing_rules)
