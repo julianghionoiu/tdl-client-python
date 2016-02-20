@@ -61,13 +61,9 @@ def get_implementation(implementation_name):
 
 @when("I go live with the following processing rules")
 def step_impl(context):
-    implementation_map = {}
-    for row in table_as_list_of_rows(context):
-        implementation_map[row[0]] = {'test_implementation': get_implementation(row[1]), 'action': row[2]}
-
     processing_rules = ProcessingRules()
-    for k,v in implementation_map.items():
-        processing_rules.on(k).call(v['test_implementation']).then(v['action'])
+    for row in table_as_list_of_rows(context):
+        processing_rules.on(row[0]).call(get_implementation(row[1])).then(row[2])
 
     with Capturing() as context.stdout_capture:
         context.client.go_live_with(processing_rules)
