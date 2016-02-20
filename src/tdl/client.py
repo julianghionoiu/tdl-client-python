@@ -4,6 +4,7 @@ import logging
 import time
 import json
 from collections import OrderedDict
+from .processing_rules import ProcessingRules
 
 import stomp
 
@@ -17,9 +18,8 @@ class Client(object):
         self.port = port
         self.username = username
 
-    def go_live_with(self, implementation_map):
-        handling_strategy = RespondToAllRequests(implementation_map)
-        self.run(handling_strategy)
+    def go_live_with(self, processing_rules):
+        self.run(ApplyProcessingRules(processing_rules))
 
     def run(self, handling_strategy):
         try:
@@ -32,9 +32,9 @@ class Client(object):
             logger.exception('Problem communicating with the broker.')
 
 
-class RespondToAllRequests(object):
-    def __init__(self, implementation_map):
-        self.implementation_map = implementation_map
+class ApplyProcessingRules(object):
+    def __init__(self, processing_rules):
+        self.processing_rules = processing_rules
 
     def process_next_message_from(self, remote_broker, headers, message):
         try:
@@ -44,7 +44,7 @@ class RespondToAllRequests(object):
         method = decoded_message['method']
         params = decoded_message['params']
         id = decoded_message['id']
-        if method not in self.implementation_map:
+        if method not in self.processing_rules.rules:
             self.print_user_message(
                     params,
                     'error = "method \'{}\' did not match any processing rule", (NOT PUBLISHED)'.format(method),
@@ -52,7 +52,7 @@ class RespondToAllRequests(object):
                     method
             )
 
-        implementation = self.implementation_map[method]['test_implementation']
+        implementation = self.processing_rules.rules[method].user_implementation
         try:
             result = implementation(params)
             user_result_message = 'resp = {}'.format(self.get_parameter_msg(result))
@@ -65,14 +65,14 @@ class RespondToAllRequests(object):
                 ('error', None),
                 ('id', id),
             ])
-            if 'publish' in self.implementation_map[method]['action']:
+            if 'publish' in self.processing_rules.rules[method].client_action:
                 remote_broker.acknowledge(headers)
                 remote_broker.publish(response)
             else:
                 user_result_message = 'resp = {}, (NOT PUBLISHED)'.format(self.get_parameter_msg(result))
 
         self.print_user_message(params, user_result_message, id, method)
-        if 'stop' in self.implementation_map[method]['action']:
+        if 'stop' in self.processing_rules.rules[method].client_action:
             remote_broker.conn.unsubscribe(1)
             remote_broker.conn.remove_listener('listener')
 
