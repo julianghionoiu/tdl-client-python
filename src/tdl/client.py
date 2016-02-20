@@ -18,10 +18,7 @@ class Client(object):
         self.port = port
         self.username = username
 
-    def go_live_with(self, implementation_map):
-        processing_rules = ProcessingRules()
-        for k,v in implementation_map.items():
-            processing_rules.on(k).call(v['test_implementation']).then(v['action'])
+    def go_live_with(self, processing_rules):
         self.run(ApplyProcessingRules(processing_rules))
 
     def run(self, handling_strategy):

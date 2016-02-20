@@ -4,6 +4,7 @@ from behave import given, step, then, use_step_matcher, when
 from hamcrest import assert_that, contains_string, equal_to, is_
 from cStringIO import StringIO
 from tdl.client import Client
+from tdl.processing_rules import ProcessingRules
 
 use_step_matcher("re")
 
@@ -64,8 +65,12 @@ def step_impl(context):
     for row in table_as_list_of_rows(context):
         implementation_map[row[0]] = {'test_implementation': get_implementation(row[1]), 'action': row[2]}
 
+    processing_rules = ProcessingRules()
+    for k,v in implementation_map.items():
+        processing_rules.on(k).call(v['test_implementation']).then(v['action'])
+
     with Capturing() as context.stdout_capture:
-        context.client.go_live_with(implementation_map)
+        context.client.go_live_with(processing_rules)
 
 # ~~~~~ Assertions
 
