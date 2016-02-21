@@ -1,4 +1,4 @@
-PREVIOUS_VERSION = '0.6.5'
+PREVIOUS_VERSION = '0.8.1'
 
 
 def main():
