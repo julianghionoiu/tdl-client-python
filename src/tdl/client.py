@@ -62,7 +62,7 @@ class ApplyProcessingRules(object):
 
             except Exception as e:
                 result = ''
-                logger.info('The user implementation has thrown an exception: {}'.format(e.message))
+                logger.exception('The user implementation has thrown an exception: {}'.format(e.message))
                 user_result_message = 'error = "user implementation raised exception", (NOT PUBLISHED)'
                 action = 'stop'
 
