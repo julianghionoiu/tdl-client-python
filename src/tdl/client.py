@@ -1,5 +1,4 @@
 __author__ = 'tdpreece'
-__author__ = 'tdpreece'
 import logging
 import time
 import json
@@ -12,7 +11,7 @@ logger.addHandler(logging.NullHandler())
 
 
 class Client(object):
-    def __init__(self, hostname, port, username):
+    def __init__(self, hostname, username, port=61613):
         self.hostname = hostname
         self.port = port
         self.username = username
@@ -39,11 +38,12 @@ class ApplyProcessingRules(object):
         # Decode request
         try:
             decoded_message = json.loads(message)
+            method = decoded_message['method']
+            params = decoded_message['params']
+            id = decoded_message['id']
         except:
             print('Invalid message format')
-        method = decoded_message['method']
-        params = decoded_message['params']
-        id = decoded_message['id']
+            action = 'stop'
 
         # Match implementation
         if method not in self.processing_rules.rules:
@@ -52,7 +52,7 @@ class ApplyProcessingRules(object):
         else:
             implementation = self.processing_rules.rules[method].user_implementation
             try:
-                result = implementation(params)
+                result = implementation(*params)
                 action = self.processing_rules.rules[method].client_action
 
                 if 'publish' in action:

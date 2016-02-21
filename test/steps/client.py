@@ -21,7 +21,7 @@ def create_the_queues(context):
     context.response_queue.purge()
     hostname = 'localhost'
     stomp_port = 21613
-    context.client = Client(hostname, stomp_port, username)
+    context.client = Client(hostname=hostname, username=username, port=stomp_port)
 
 
 @given("the broker is not available")
@@ -29,7 +29,7 @@ def client_with_wrong_broker(context):
     incorrect_hostname = 'localhost'
     stomp_port = 11613
     username = 'test'
-    context.client = Client(incorrect_hostname, stomp_port, username)
+    context.client = Client(hostname=incorrect_hostname, username=username, port=stomp_port)
 
 
 @given("I receive the following requests")
@@ -45,12 +45,12 @@ def initialize_request_queue(context):
 
 def get_implementation(implementation_name):
     test_implementations = {
-        'add two numbers': lambda params: int(params[0]) + int(params[1]),
-        'increment number': lambda params: int(params[0]) + 1,
-        'return null': lambda params: None,
-        'throw exception': lambda params: raise_(Exception('faulty user code')),
-        'some logic': lambda params: "ok",
-        'echo the request': lambda params: params[0],
+        'add two numbers': lambda x, y: x + y,
+        'increment number': lambda x: x + 1,
+        'return null': lambda *args: None,
+        'throw exception': lambda param: raise_(Exception('faulty user code')),
+        'some logic': lambda param: "ok",
+        'echo the request': lambda req: req,
     }
 
     if implementation_name in test_implementations:
