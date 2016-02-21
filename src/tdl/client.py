@@ -21,9 +21,11 @@ class Client(object):
 
     def run(self, handling_strategy):
         try:
+            print('Starting client')
             remote_broker = RemoteBroker(self.hostname, self.port, self.username)
             remote_broker.subscribe(handling_strategy)
             time.sleep(1)
+            print('Stopping client')
             remote_broker.close()
         except Exception as e:
             print('There was a problem processing messages')
