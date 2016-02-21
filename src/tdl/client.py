@@ -4,7 +4,6 @@ import logging
 import time
 import json
 from collections import OrderedDict
-from .processing_rules import ProcessingRules
 
 import stomp
 
@@ -37,6 +36,7 @@ class ApplyProcessingRules(object):
         self.processing_rules = processing_rules
 
     def process_next_message_from(self, remote_broker, headers, message):
+        # Decode request
         try:
             decoded_message = json.loads(message)
         except:
@@ -44,35 +44,40 @@ class ApplyProcessingRules(object):
         method = decoded_message['method']
         params = decoded_message['params']
         id = decoded_message['id']
-        if method not in self.processing_rules.rules:
-            self.print_user_message(
-                    params,
-                    'error = "method \'{}\' did not match any processing rule", (NOT PUBLISHED)'.format(method),
-                    id,
-                    method
-            )
 
-        implementation = self.processing_rules.rules[method].user_implementation
-        try:
-            result = implementation(params)
-            user_result_message = 'resp = {}'.format(self.get_parameter_msg(result))
-        except Exception as e:
-            logger.info('The user implementation has thrown an exception: {}'.format(e.message))
-            user_result_message = 'error = "user implementation raised exception", (NOT PUBLISHED)'
+        # Match implementation
+        if method not in self.processing_rules.rules:
+            user_result_message = 'error = "method \'{}\' did not match any processing rule", (NOT PUBLISHED)'.format(method)
+            action = 'stop'
         else:
-            response = OrderedDict([
-                ('result', result),
-                ('error', None),
-                ('id', id),
-            ])
-            if 'publish' in self.processing_rules.rules[method].client_action:
+            implementation = self.processing_rules.rules[method].user_implementation
+            try:
+                result = implementation(params)
+                action = self.processing_rules.rules[method].client_action
+
+                if 'publish' in action:
+                    user_result_message = 'resp = {}'.format(self.get_parameter_msg(result))
+                else:
+                    user_result_message = 'resp = {}, (NOT PUBLISHED)'.format(self.get_parameter_msg(result))
+
+            except Exception as e:
+                result = ''
+                logger.info('The user implementation has thrown an exception: {}'.format(e.message))
+                user_result_message = 'error = "user implementation raised exception", (NOT PUBLISHED)'
+                action = 'stop'
+
+            if 'publish' in action:
+                response = OrderedDict([
+                    ('result', result),
+                    ('error', None),
+                    ('id', id),
+                ])
+
                 remote_broker.acknowledge(headers)
                 remote_broker.publish(response)
-            else:
-                user_result_message = 'resp = {}, (NOT PUBLISHED)'.format(self.get_parameter_msg(result))
 
         self.print_user_message(params, user_result_message, id, method)
-        if 'stop' in self.processing_rules.rules[method].client_action:
+        if 'stop' in action:
             remote_broker.conn.unsubscribe(1)
             remote_broker.conn.remove_listener('listener')
 
@@ -92,6 +97,7 @@ class ApplyProcessingRules(object):
             return '"{} .. ( 1 more line )"'.format(lines[0])
         return '"{} .. ( {} more lines )"'.format(lines[0], len(lines) - 1)
 
+
 class Listener(stomp.ConnectionListener):
     def __init__(self, remote_broker, handling_strategy):
         self.remote_broker = remote_broker
@@ -99,7 +105,6 @@ class Listener(stomp.ConnectionListener):
 
     def on_message(self, headers, message):
         self.handling_strategy.process_next_message_from(self.remote_broker, headers, message)
-
 
 
 class RemoteBroker(object):
@@ -115,17 +120,17 @@ class RemoteBroker(object):
 
     def publish(self, response):
         self.conn.send(
-            body=json.dumps(response, separators=(',', ':')),
-            destination='{}.resp'.format(self.username)
+                body=json.dumps(response, separators=(',', ':')),
+                destination='{}.resp'.format(self.username)
         )
 
     def subscribe(self, handling_strategy):
         listener = Listener(self, handling_strategy)
         self.conn.set_listener('listener', listener)
         self.conn.subscribe(
-            destination='{}.req'.format(self.username),
-            id=1,
-            ack='client-individual'
+                destination='{}.req'.format(self.username),
+                id=1,
+                ack='client-individual'
         )
 
     def close(self):
