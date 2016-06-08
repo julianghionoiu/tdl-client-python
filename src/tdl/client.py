@@ -44,6 +44,10 @@ class ApplyProcessingRules(object):
             params = decoded_message['params']
             id = decoded_message['id']
         except:
+            decoded_message = ''
+            method = ''
+            params = ''
+            id = ''
             print('Invalid message format')
             action = 'stop'
 
