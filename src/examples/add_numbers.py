@@ -20,7 +20,7 @@ setup_logging()
 
 
 def run_client():
-    client = Client(hostname='localhost', username='julian')
+    client = Client(hostname='localhost', unique_id='julian@example.com')
 
     rules = ProcessingRules()
     rules.on("display_description").call(lambda label, description: "OK").then("publish")

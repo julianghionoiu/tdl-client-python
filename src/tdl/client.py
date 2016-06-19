@@ -11,10 +11,10 @@ logger.addHandler(logging.NullHandler())
 
 
 class Client(object):
-    def __init__(self, hostname, username, port=61613):
+    def __init__(self, hostname, unique_id, port=61613):
         self.hostname = hostname
         self.port = port
-        self.username = username
+        self.unique_id = unique_id
 
     def go_live_with(self, processing_rules):
         self.run(ApplyProcessingRules(processing_rules))
@@ -22,7 +22,7 @@ class Client(object):
     def run(self, handling_strategy):
         try:
             print('Starting client')
-            remote_broker = RemoteBroker(self.hostname, self.port, self.username)
+            remote_broker = RemoteBroker(self.hostname, self.port, self.unique_id)
             remote_broker.subscribe(handling_strategy)
             time.sleep(1)
             print('Stopping client')
@@ -114,12 +114,12 @@ class Listener(stomp.ConnectionListener):
 
 
 class RemoteBroker(object):
-    def __init__(self, hostname, port, username):
+    def __init__(self, hostname, port, unique_id):
         hosts = [(hostname, port)]
         self.conn = stomp.Connection(host_and_ports=hosts, timeout=10)
         self.conn.start()
         self.conn.connect(wait=True)
-        self.username = username
+        self.unique_id = unique_id
 
     def acknowledge(self, headers):
         self.conn.ack(headers['message-id'], headers['subscription'])
@@ -127,14 +127,14 @@ class RemoteBroker(object):
     def publish(self, response):
         self.conn.send(
                 body=json.dumps(response, separators=(',', ':')),
-                destination='{}.resp'.format(self.username)
+                destination='{}.resp'.format(self.unique_id)
         )
 
     def subscribe(self, handling_strategy):
         listener = Listener(self, handling_strategy)
         self.conn.set_listener('listener', listener)
         self.conn.subscribe(
-                destination='{}.req'.format(self.username),
+                destination='{}.req'.format(self.unique_id),
                 id=1,
                 ack='client-individual'
         )

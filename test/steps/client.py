@@ -14,22 +14,22 @@ use_step_matcher("re")
 
 @given("I start with a clean broker")
 def create_the_queues(context):
-    username = 'test'
-    context.request_queue = context.broker.add_queue('{}.req'.format(username))
+    unique_id = 'test@example.com'
+    context.request_queue = context.broker.add_queue('{}.req'.format(unique_id))
     context.request_queue.purge()
-    context.response_queue = context.broker.add_queue('{}.resp'.format(username))
+    context.response_queue = context.broker.add_queue('{}.resp'.format(unique_id))
     context.response_queue.purge()
     hostname = 'localhost'
     stomp_port = 21613
-    context.client = Client(hostname=hostname, username=username, port=stomp_port)
+    context.client = Client(hostname=hostname, unique_id=unique_id, port=stomp_port)
 
 
 @given("the broker is not available")
 def client_with_wrong_broker(context):
     incorrect_hostname = 'localhost'
     stomp_port = 11613
-    username = 'test'
-    context.client = Client(hostname=incorrect_hostname, username=username, port=stomp_port)
+    unique_id = 'test@example.com'
+    context.client = Client(hostname=incorrect_hostname, unique_id=unique_id, port=stomp_port)
 
 
 @given("I receive the following requests")
