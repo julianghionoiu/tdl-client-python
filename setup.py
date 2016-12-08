@@ -30,7 +30,7 @@ except BaseException as e:
 
 # Compute next version
 previous_version = StrictVersion(PREVIOUS_VERSION)
-new_spec_version = StrictVersion("{0}.0".format(major_minor_version))
+new_spec_version = StrictVersion("{0}.1".format(major_minor_version))
 if new_spec_version > previous_version:
     current_version = new_spec_version
 else:
