@@ -21,7 +21,7 @@ def create_the_queues(context):
     context.response_queue.purge()
     hostname = 'localhost'
     stomp_port = 21613
-    context.client = Client(hostname=hostname, unique_id=unique_id, port=stomp_port)
+    context.client = Client(hostname=hostname, unique_id=unique_id, port=stomp_port, time_to_wait_for_requests=0.5)
 
 
 @given("the broker is not available")
@@ -29,7 +29,7 @@ def client_with_wrong_broker(context):
     incorrect_hostname = 'localhost'
     stomp_port = 11613
     unique_id = 'test@example.com'
-    context.client = Client(hostname=incorrect_hostname, unique_id=unique_id, port=stomp_port)
+    context.client = Client(hostname=incorrect_hostname, unique_id=unique_id, port=stomp_port, time_to_wait_for_requests=0.5)
 
 
 @given("I receive the following requests")

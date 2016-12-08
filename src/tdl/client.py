@@ -11,10 +11,11 @@ logger.addHandler(logging.NullHandler())
 
 
 class Client(object):
-    def __init__(self, hostname, unique_id, port=61613):
+    def __init__(self, hostname, unique_id, port=61613, time_to_wait_for_requests=1):
         self.hostname = hostname
         self.port = port
         self.unique_id = unique_id
+        self.time_to_wait_for_requests = time_to_wait_for_requests
 
     def go_live_with(self, processing_rules):
         self.run(ApplyProcessingRules(processing_rules))
@@ -24,7 +25,8 @@ class Client(object):
             print('Starting client')
             remote_broker = RemoteBroker(self.hostname, self.port, self.unique_id)
             remote_broker.subscribe(handling_strategy)
-            time.sleep(1)
+            print('Waiting for requests')
+            time.sleep(self.time_to_wait_for_requests)
             print('Stopping client')
             remote_broker.close()
         except Exception as e:
@@ -116,7 +118,8 @@ class Listener(stomp.ConnectionListener):
 class RemoteBroker(object):
     def __init__(self, hostname, port, unique_id):
         hosts = [(hostname, port)]
-        self.conn = stomp.Connection(host_and_ports=hosts, timeout=10)
+        connect_timeout = 10
+        self.conn = stomp.Connection(host_and_ports=hosts, timeout=connect_timeout)
         self.conn.start()
         self.conn.connect(wait=True)
         self.unique_id = unique_id
