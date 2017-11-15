@@ -72,6 +72,11 @@ def initialize_request_queue(context):
 # ~~~~~ Implementations
 
 
+def do_slow_work(t):
+    time.sleep(t/1000.00)
+    return "OK"
+
+
 def get_implementation(implementation_name):
     test_implementations = {
         'add two numbers': lambda x, y: x + y,
@@ -80,7 +85,7 @@ def get_implementation(implementation_name):
         'throw exception': lambda param: raise_(Exception('faulty user code')),
         'some logic': lambda param: "ok",
         'echo the request': lambda req: req,
-        'work for 500ms': lambda param: time.sleep(0.5),
+        'work for 500ms': lambda param: do_slow_work(100),
     }
 
     if implementation_name in test_implementations:
