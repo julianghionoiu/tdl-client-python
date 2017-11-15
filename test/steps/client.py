@@ -34,9 +34,10 @@ def client_with_wrong_broker(context):
 
 @given("I receive the following requests")
 def initialize_request_queue(context):
-    requests = table_as_list(context)
-    for request in requests:
-        context.request_queue.send_text_message(request)
+    for row in context.table:
+        payload = row[0]
+        context.request_queue.send_text_message(payload)
+
     context.request_count = context.request_queue.get_size()
 
 
@@ -62,7 +63,7 @@ def get_implementation(implementation_name):
 @when("I go live with the following processing rules")
 def step_impl(context):
     processing_rules = ProcessingRules()
-    for row in table_as_list_of_rows(context):
+    for row in context.table:
         method = row[0]
         user_implementation = get_implementation(row[1])
         action = row[2]
@@ -80,17 +81,13 @@ def request_queue_empty(context):
 
 @step("the client should publish the following responses")
 def response_queue_contains_expected(context):
-    expected_responses = table_as_list(context)
+    expected_responses = [row[0] for row in context.table]
     assert_that(context.response_queue.get_message_contents(), is_(equal_to(expected_responses)),
                 "The responses are not correct")
 
 
 @then("the client should display to console")
 def the_client_should_display_to_console(context):
-    assert_that(
-        context.stdout_capture.getvalue(),
-        contains_string(context.table.headings[0])
-    ) 
     for row in context.table:
         assert_that(
             context.stdout_capture.getvalue(),
@@ -138,13 +135,6 @@ def i_should_get_no_exception(context):
 
 
 # ~~~~ Helpers
-def table_as_list_of_rows(context):
-    return [row for row in context.table]
-
-
-def table_as_list(context):
-    return [context.table.headings[0]] + [row[0] for row in context.table]
-
 
 def raise_(ex):
     raise ex
