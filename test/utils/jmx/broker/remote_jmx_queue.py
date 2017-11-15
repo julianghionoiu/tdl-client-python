@@ -1,15 +1,14 @@
-import codecs
-
-from jolokia_session import JolokiaSession
-
-
 class RemoteJmxQueue(object):
     def __init__(self, jolokia_session, broker_name, queue_name):
+        self.name = queue_name
         self.jolokia_session = jolokia_session
         self.queue_bean = (
             "org.apache.activemq:type=Broker,brokerName={},"
             "destinationType=Queue,destinationName={}"
         ).format(broker_name, queue_name)
+
+    def get_name(self):
+        return self.name
 
     def send_text_message(self, request):
         operation = {

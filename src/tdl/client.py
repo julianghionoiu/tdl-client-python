@@ -11,11 +11,14 @@ logger.addHandler(logging.NullHandler())
 
 
 class Client(object):
-    def __init__(self, hostname, unique_id, port=61613, time_to_wait_for_requests=1):
+    def __init__(self, hostname, unique_id, port=61613, request_timeout_millis=500):
         self.hostname = hostname
         self.port = port
         self.unique_id = unique_id
-        self.time_to_wait_for_requests = time_to_wait_for_requests
+        self.request_timeout_millis = request_timeout_millis
+
+    def get_request_timeout_millis(self):
+        return self.request_timeout_millis
 
     def go_live_with(self, processing_rules):
         self.run(ApplyProcessingRules(processing_rules))
@@ -26,7 +29,7 @@ class Client(object):
             remote_broker = RemoteBroker(self.hostname, self.port, self.unique_id)
             remote_broker.subscribe(handling_strategy)
             print('Waiting for requests')
-            time.sleep(self.time_to_wait_for_requests)
+            time.sleep(self.request_timeout_millis / 1000.00)
             print('Stopping client')
             remote_broker.close()
         except Exception as e:

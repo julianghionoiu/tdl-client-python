@@ -1,4 +1,5 @@
 import sys
+import time
 
 from behave import given, step, then, use_step_matcher, when
 from hamcrest import assert_that, contains_string, equal_to, is_
@@ -12,16 +13,16 @@ use_step_matcher("re")
 # ~~~~~ Setup
 
 
-@given("I start with a clean broker")
-def create_the_queues(context):
-    unique_id = 'test@example.com'
+@given('I start with a clean broker and a client for user \"([^"]*)\"')
+def create_the_queues(context, username):
+    unique_id = username
     context.request_queue = context.broker.add_queue('{}.req'.format(unique_id))
     context.request_queue.purge()
     context.response_queue = context.broker.add_queue('{}.resp'.format(unique_id))
     context.response_queue.purge()
     hostname = 'localhost'
     stomp_port = 21613
-    context.client = Client(hostname=hostname, unique_id=unique_id, port=stomp_port, time_to_wait_for_requests=0.5)
+    context.client = Client(hostname=hostname, unique_id=unique_id, port=stomp_port)
 
 
 @given("the broker is not available")
@@ -29,7 +30,34 @@ def client_with_wrong_broker(context):
     incorrect_hostname = 'localhost'
     stomp_port = 11613
     unique_id = 'test@example.com'
-    context.client = Client(hostname=incorrect_hostname, unique_id=unique_id, port=stomp_port, time_to_wait_for_requests=0.5)
+    context.client = Client(hostname=incorrect_hostname, unique_id=unique_id, port=stomp_port)
+
+
+@then("the time to wait for requests is (\d+)ms")
+def check_time(context, expected_timeout):
+    assert_that(
+        context.client.get_request_timeout_millis(),
+        is_(equal_to(int(expected_timeout))),
+        "The client request timeout has a different value."
+    )
+
+
+@then('the request queue is \"([^"]*)\"')
+def check_request_queue(context, expected_value):
+    assert_that(
+        context.request_queue.get_name(),
+        is_(equal_to(expected_value)),
+        "Request queue has a different value."
+    )
+
+
+@then('the response queue is \"([^"]*)\"')
+def check_response_queue(context, expected_value):
+    assert_that(
+        context.response_queue.get_name(),
+        is_(equal_to(expected_value)),
+        "Request queue has a different value."
+    )
 
 
 @given("I receive the following requests")
@@ -52,6 +80,7 @@ def get_implementation(implementation_name):
         'throw exception': lambda param: raise_(Exception('faulty user code')),
         'some logic': lambda param: "ok",
         'echo the request': lambda req: req,
+        'work for 500ms': lambda param: time.sleep(0.5),
     }
 
     if implementation_name in test_implementations:
