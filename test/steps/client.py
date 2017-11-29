@@ -85,7 +85,7 @@ def get_implementation(implementation_name):
         'throw exception': lambda param: raise_(Exception('faulty user code')),
         'some logic': lambda param: "ok",
         'echo the request': lambda req: req,
-        'work for 500ms': lambda param: do_slow_work(100),
+        'work for 500ms': lambda param: do_slow_work(500),
     }
 
     if implementation_name in test_implementations:
@@ -126,7 +126,7 @@ def the_client_should_display_to_console(context):
         assert_that(
             context.stdout_capture.getvalue(),
             contains_string(row[0])
-        ) 
+        )
 
 
 @step("the client should not display to console")
@@ -139,16 +139,16 @@ def the_client_should_not_display_to_console(context):
 @then("the client should not consume any request")
 def request_queue_unchanged(context):
     assert_that(
-        context.request_queue.get_size(), 
-        is_(equal_to(context.request_count)), 
+        context.request_queue.get_size(),
+        is_(equal_to(context.request_count)),
         "Requests have been consumed"
     )
 
 @then(u'the client should consume first request')
 def step_impl(context):
     assert_that(
-        context.request_queue.get_size(), 
-        is_(equal_to(context.request_count - 1)), 
+        context.request_queue.get_size(),
+        is_(equal_to(context.request_count - 1)),
         "Wrong number of requests have been consumed."
     )
 
@@ -172,6 +172,7 @@ def i_should_get_no_exception(context):
 
 def raise_(ex):
     raise ex
+
 
 class Capturing(list):
     def __enter__(self):

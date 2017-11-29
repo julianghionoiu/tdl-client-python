@@ -3,6 +3,7 @@ import logging
 import time
 import json
 from collections import OrderedDict
+from threading import Timer
 
 import stomp
 
@@ -26,12 +27,16 @@ class Client(object):
     def run(self, handling_strategy):
         try:
             print('Starting client')
+
             remote_broker = RemoteBroker(self.hostname, self.port, self.unique_id)
             remote_broker.subscribe(handling_strategy)
+
             print('Waiting for requests')
-            time.sleep(self.request_timeout_millis / 1000.00)
+            while remote_broker.is_connected():
+                time.sleep(0.1)
+
             print('Stopping client')
-            remote_broker.close()
+
         except Exception as e:
             print('There was a problem processing messages')
             logger.exception('Problem communicating with the broker.')
@@ -127,16 +132,23 @@ class RemoteBroker(object):
         self.conn.connect(wait=True)
         self.unique_id = unique_id
 
+        self.request_timeout_seconds = 0.51
+        self.timer = Timer(self.request_timeout_seconds, self.close)
+        self.timer.start()
+
     def acknowledge(self, headers):
         self.conn.ack(headers['message-id'], headers['subscription'])
+        self.restart_timer()
 
     def publish(self, response):
+        self.restart_timer()
         self.conn.send(
                 body=json.dumps(response, separators=(',', ':')),
                 destination='{}.resp'.format(self.unique_id)
         )
 
     def subscribe(self, handling_strategy):
+        self.restart_timer()
         listener = Listener(self, handling_strategy)
         self.conn.set_listener('listener', listener)
         self.conn.subscribe(
@@ -145,5 +157,13 @@ class RemoteBroker(object):
                 ack='client-individual'
         )
 
+    def restart_timer(self):
+        self.timer.cancel()
+        self.timer = Timer(self.request_timeout_seconds, self.close)
+        self.timer.start()
+
     def close(self):
         self.conn.disconnect()
+
+    def is_connected(self):
+        return self.conn.is_connected()
