@@ -32,6 +32,7 @@ class Client(object):
             remote_broker.subscribe(handling_strategy)
 
             print('Waiting for requests')
+            # DEBT - this is just to block.
             while remote_broker.is_connected():
                 time.sleep(0.1)
 

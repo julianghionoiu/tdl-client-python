@@ -23,7 +23,7 @@ tox
 
 Pass arguments to behave, e.g. to run a specific scenario,
 ```
-tox -- -n \'Trial run does not count\'
+tox -- -n 'Should not timeout prematurely'
 ```
 
 # How to use Python virtualenvs
