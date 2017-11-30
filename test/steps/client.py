@@ -69,6 +69,16 @@ def initialize_request_queue(context):
     context.request_count = context.request_queue.get_size()
 
 
+@given("I receive (\d+) identical requests like")
+def receive_multiple_identical_request(context, num):
+    for x in xrange(int(num)):
+        for row in context.table:
+            payload = row[0]
+            context.request_queue.send_text_message(payload)
+
+    context.request_count = context.request_queue.get_size()
+
+
 # ~~~~~ Implementations
 
 
@@ -85,7 +95,7 @@ def get_implementation(implementation_name):
         'throw exception': lambda param: raise_(Exception('faulty user code')),
         'some logic': lambda param: "ok",
         'echo the request': lambda req: req,
-        'work for 500ms': lambda param: do_slow_work(500),
+        'work for 600ms': lambda param: do_slow_work(600),
     }
 
     if implementation_name in test_implementations:
@@ -144,6 +154,7 @@ def request_queue_unchanged(context):
         "Requests have been consumed"
     )
 
+
 @then(u'the client should consume first request')
 def step_impl(context):
     assert_that(
@@ -166,6 +177,12 @@ def response_queue_unchanged(context):
 def i_should_get_no_exception(context):
     # OBS if you get here there were no exceptions
     pass
+
+
+@then('the processing time should be lower than (\d+)ms')
+def processing_time_should_be_lower_than(context, num):
+    print("total_processing_time " + str(context.client.total_processing_time_millis))
+    assert(num > context.client.total_processing_time_millis)
 
 
 # ~~~~ Helpers

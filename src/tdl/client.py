@@ -1,3 +1,5 @@
+import datetime
+
 __author__ = 'tdpreece'
 import logging
 import time
@@ -17,18 +19,23 @@ class Client(object):
         self.port = port
         self.unique_id = unique_id
         self.request_timeout_millis = request_timeout_millis
+        self.total_processing_time_millis = 0
+        self.__start_time = None
+        self.__end_time = None
+        self.__timer = None
 
     def get_request_timeout_millis(self):
         return self.request_timeout_millis
 
     def go_live_with(self, processing_rules):
+        self.__start_time = datetime.datetime.now()
         self.run(ApplyProcessingRules(processing_rules))
 
     def run(self, handling_strategy):
         try:
             print('Starting client')
 
-            remote_broker = RemoteBroker(self.hostname, self.port, self.unique_id)
+            remote_broker = RemoteBroker(self.hostname, self.port, self.unique_id, self.request_timeout_millis)
             remote_broker.subscribe(handling_strategy)
 
             print('Waiting for requests')
@@ -36,7 +43,9 @@ class Client(object):
             while remote_broker.is_connected():
                 time.sleep(0.1)
 
-            print('Stopping client')
+            self.__end_time = datetime.datetime.now()
+            difference = self.__end_time - self.__start_time
+            self.total_processing_time_millis = difference.total_seconds() * 1000.00
 
         except Exception as e:
             print('There was a problem processing messages')
@@ -116,55 +125,58 @@ class ApplyProcessingRules(object):
 
 
 class Listener(stomp.ConnectionListener):
-    def __init__(self, remote_broker, handling_strategy):
+    def __init__(self, remote_broker, handling_strategy, start_timer, stop_timer):
         self.remote_broker = remote_broker
         self.handling_strategy = handling_strategy
+        self.start_timer = start_timer
+        self.stop_timer = stop_timer
 
     def on_message(self, headers, message):
+        self.stop_timer()
         self.handling_strategy.process_next_message_from(self.remote_broker, headers, message)
+        self.start_timer()
 
 
 class RemoteBroker(object):
-    def __init__(self, hostname, port, unique_id):
+    def __init__(self, hostname, port, unique_id, request_timeout_millis):
         hosts = [(hostname, port)]
         connect_timeout = 10
         self.conn = stomp.Connection(host_and_ports=hosts, timeout=connect_timeout)
         self.conn.start()
         self.conn.connect(wait=True)
         self.unique_id = unique_id
-
-        self.request_timeout_seconds = 0.51
-        self.timer = Timer(self.request_timeout_seconds, self.close)
-        self.timer.start()
+        self.request_timeout_millis = request_timeout_millis
 
     def acknowledge(self, headers):
         self.conn.ack(headers['message-id'], headers['subscription'])
-        self.restart_timer()
 
     def publish(self, response):
-        self.restart_timer()
         self.conn.send(
                 body=json.dumps(response, separators=(',', ':')),
                 destination='{}.resp'.format(self.unique_id)
         )
 
     def subscribe(self, handling_strategy):
-        self.restart_timer()
-        listener = Listener(self, handling_strategy)
+        listener = Listener(self, handling_strategy, self.start_timer, self.stop_timer)
         self.conn.set_listener('listener', listener)
         self.conn.subscribe(
                 destination='{}.req'.format(self.unique_id),
                 id=1,
                 ack='client-individual'
         )
-
-    def restart_timer(self):
-        self.timer.cancel()
-        self.timer = Timer(self.request_timeout_seconds, self.close)
-        self.timer.start()
+        self.start_timer()
 
     def close(self):
+        print('Stopping client')
         self.conn.disconnect()
 
     def is_connected(self):
         return self.conn.is_connected()
+
+    def stop_timer(self):
+        if self.__timer is not None:
+            self.__timer.cancel()
+
+    def start_timer(self):
+        self.__timer = Timer(self.request_timeout_millis / 1000.00, self.close)
+        self.__timer.start()
