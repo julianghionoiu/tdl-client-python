@@ -93,7 +93,7 @@ def get_implementation(implementation_name):
         'increment number': lambda x: x + 1,
         'return null': lambda *args: None,
         'throw exception': lambda param: raise_(Exception('faulty user code')),
-        'some logic': lambda param: "ok",
+        'some logic': lambda: "ok",
         'echo the request': lambda req: req,
         'work for 600ms': lambda param: do_slow_work(600),
     }
