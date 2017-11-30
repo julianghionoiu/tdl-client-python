@@ -69,6 +69,16 @@ def initialize_request_queue(context):
     context.request_count = context.request_queue.get_size()
 
 
+@given("I receive (\d+) identical requests like")
+def receive_multiple_identical_request(context, num):
+    for x in xrange(int(num)):
+        for row in context.table:
+            payload = row[0]
+            context.request_queue.send_text_message(payload)
+
+    context.request_count = context.request_queue.get_size()
+
+
 # ~~~~~ Implementations
 
 
@@ -83,9 +93,9 @@ def get_implementation(implementation_name):
         'increment number': lambda x: x + 1,
         'return null': lambda *args: None,
         'throw exception': lambda param: raise_(Exception('faulty user code')),
-        'some logic': lambda param: "ok",
+        'some logic': lambda: "ok",
         'echo the request': lambda req: req,
-        'work for 500ms': lambda param: do_slow_work(100),
+        'work for 600ms': lambda param: do_slow_work(600),
     }
 
     if implementation_name in test_implementations:
@@ -126,7 +136,7 @@ def the_client_should_display_to_console(context):
         assert_that(
             context.stdout_capture.getvalue(),
             contains_string(row[0])
-        ) 
+        )
 
 
 @step("the client should not display to console")
@@ -139,16 +149,17 @@ def the_client_should_not_display_to_console(context):
 @then("the client should not consume any request")
 def request_queue_unchanged(context):
     assert_that(
-        context.request_queue.get_size(), 
-        is_(equal_to(context.request_count)), 
+        context.request_queue.get_size(),
+        is_(equal_to(context.request_count)),
         "Requests have been consumed"
     )
+
 
 @then(u'the client should consume first request')
 def step_impl(context):
     assert_that(
-        context.request_queue.get_size(), 
-        is_(equal_to(context.request_count - 1)), 
+        context.request_queue.get_size(),
+        is_(equal_to(context.request_count - 1)),
         "Wrong number of requests have been consumed."
     )
 
@@ -168,10 +179,17 @@ def i_should_get_no_exception(context):
     pass
 
 
+@then('the processing time should be lower than (\d+)ms')
+def processing_time_should_be_lower_than(context, num):
+    print("total_processing_time " + str(context.client.total_processing_time_millis))
+    assert(num > context.client.total_processing_time_millis)
+
+
 # ~~~~ Helpers
 
 def raise_(ex):
     raise ex
+
 
 class Capturing(list):
     def __enter__(self):
