@@ -39,7 +39,9 @@ else:
 # print "previous_version = ", previous_version
 # print "current_version = ", current_version
 
-VERSION = str(current_version)
+# !!!!!!! MAJOR DEBT. This file is recompute every time the package is install
+# VERSION = str(current_version)
+VERSION = "0.19.2"
 
 # ~~~~~ Create configuration
 
