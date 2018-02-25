@@ -12,6 +12,10 @@ class ChallengeSessionConfig:
         self._audit_stream = StdoutAuditStream
         self._working_directory = './'
 
+    @staticmethod
+    def for_journey(journey_id):
+        return ChallengeSessionConfig(journey_id)
+
     def with_server_hostname(self, hostname):
         self._hostname = hostname
         return self
