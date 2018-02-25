@@ -3,6 +3,7 @@ from hamcrest import assert_that, contains_string, is_
 import shutil
 
 from test.runner.test_audit_stream import TestAuditStream
+from test.runner.noisy_implementation_runner import NoisyImplementationRunner
 from test.runner.quiet_implementation_runner import QuietImplementationRunner
 from test.runner.wiremock_process import WiremockProcess
 from tdl.runner.challenge_session_config import ChallengeSessionConfig
@@ -54,13 +55,14 @@ def action_input_comes_from_a_provider_returning(context, s):
 
 
 @given('^the challenges folder is empty$')
-def challenges_folder_is_empty(context):
+def challenges_folder_is_empty():
     shutil.rmtree('challenges', ignore_errors=True)
 
 
 @given('^there is an implementation runner that prints "(.*)"$')
 def there_is_an_implementation_runner_that_prints(context, s):
-    pass
+    context.implementation_runner_message = s
+    context.implementation_runner = NoisyImplementationRunner(s, audit_stream)
 
 
 @given('^recording server is returning error$')
@@ -70,12 +72,21 @@ def recording_server_is_returning_error(context):
 
 @given('^the challenge server returns (.*), response body "(.*)" for all requests$')
 def challenge_server_returns_response_body_for_all_requests(context, return_code, body):
-    pass
+    context.challenge_server_stub.create_new_mapping({
+        'endpointMatches': '^(.*)',
+        'status': return_code,
+        'verb': 'ANY',
+        'responseBody': body
+    })
 
 
 @given('^the challenge server returns (.*) for all requests$')
 def challenge_server_returns_for_all_requests(context, return_code):
-    pass
+    context.challenge_server_stub.create_new_mapping({
+        'endpointMatches': '^(.*)',
+        'status': return_code,
+        'verb': 'ANY'
+    })
 
 
 @when('^user starts client$')
@@ -94,13 +105,16 @@ def user_starts_client(context):
 
 
 @then('^the server interaction should look like:$')
-def server_interaction_should_look_like(context):
-    pass
+def server_interaction_should_look_like(_, expected_output):
+    total = audit_stream.get_log()
+    assert_that(total, is_(expected_output), 'Expected string is not contained in output')
 
 
 @then('^the file "(.*)" should contain$')
-def the_file_should_contain(context, file, text):
-    pass
+def the_file_should_contain(_, file_, text):
+    with open(file_, 'r') as f:
+        content = f.read()
+    assert_that(content, is_(text), 'Contents of the file is not what is expected')
 
 
 @then('^the recording system should be notified with "(.*)"$')
@@ -111,12 +125,16 @@ def the_recording_system_should_be_notified_with(context, expected_output):
 
 @then('^the implementation runner should be run with the provided implementations$')
 def the_implementation_runner_should_be_run_with_provided_implementations(context):
-    pass
+    total = audit_stream.get_log()
+    assert_that(total, not contains_string(context.implementation_runner_message))
 
 
 @then('^the server interaction should contain the following lines:$')
-def the_server_interaction_should_contain_the_following_lines(context, expected_output):
-    pass
+def the_server_interaction_should_contain_the_following_lines(_, expected_output):
+    total = audit_stream.get_log()
+    lines = expected_output.split('\n')
+    for line in lines:
+        assert_that(total, not contains_string(line), 'Expected string is not contained in output')
 
 
 @then('^the client should not ask the user for input$')
