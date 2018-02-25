@@ -30,10 +30,10 @@ class ChallengeSession:
         self._recording_system = RecordingSystem(self._config.get_recording_system_should_be_on())
 
         if not self._recording_system.is_recording_system_ok():
-            self._audit_stream.print('Please run `record_screen_and_upload` before continuing.')
+            self._audit_stream.log('Please run `record_screen_and_upload` before continuing.')
             return
 
-        self._audit_stream.print('Connecting to {}'.format(self._config.get_hostname()))
+        self._audit_stream.log('Connecting to {}'.format(self._config.get_hostname()))
         self.run_app()
 
     def run_app(self):
@@ -47,7 +47,7 @@ class ChallengeSession:
             should_continue = self.check_status_of_challenge()
             if should_continue:
                 user_input = self._user_input_callback()
-                self._audit_stream.print('Selected action is: {}'.format(user_input))
+                self._audit_stream.log('Selected action is: {}'.format(user_input))
                 round_description = self.execute_user_action(user_input)
                 RoundManagement.save_description(
                     self._recording_system,
@@ -56,18 +56,18 @@ class ChallengeSession:
                     self._config.get_working_directory())
 
         except ClientErrorException as e:
-            self._audit_stream.print(e)
+            self._audit_stream.log(e)
         except ServerErrorException:
-            self._audit_stream.print('Server experienced an error. Try again in a few minutes.')
+            self._audit_stream.log('Server experienced an error. Try again in a few minutes.')
         except OtherCommunicationException:
-            self._audit_stream.print('Client threw an unexpected error. Try again.')
+            self._audit_stream.log('Client threw an unexpected error. Try again.')
 
     def check_status_of_challenge(self):
         journey_progress = self._challenge_server_client.get_journey_progress()
-        self._audit_stream.print(journey_progress)
+        self._audit_stream.log(journey_progress)
 
         available_actions = self._challenge_server_client.get_available_actions()
-        self._audit_stream.print(available_actions)
+        self._audit_stream.log(available_actions)
 
         return 'No actions available.' not in available_actions
 
@@ -81,5 +81,5 @@ class ChallengeSession:
 
     def execute_action(self, user_input):
         action_feedback = self._challenge_server_client.send_action(user_input)
-        self._audit_stream.print(action_feedback)
+        self._audit_stream.log(action_feedback)
         return self._challenge_server_client.get_round_description()

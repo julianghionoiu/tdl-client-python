@@ -5,4 +5,4 @@ class NoisyImplementationRunner:
         self._audit_stream = audit_stream
 
     def run(self):
-        self._audit_stream.print(self._deploy_message)
+        self._audit_stream.log(self._deploy_message)

@@ -8,6 +8,9 @@ LAST_FETCHED_ROUND_PATH = "#{CHALLENGES_FOLDER}/XR.txt"
 
 class RoundManagement:
 
+    def __init__(self):
+        pass
+
     @staticmethod
     def save_description(listener, raw_description, audit_stream, working_directory):
         if "\n" not in raw_description:
@@ -15,7 +18,7 @@ class RoundManagement:
 
         newline_index = raw_description.find("\n")
         round_id = raw_description[:newline_index]
-        last_fetched_round = RoundManagement.get_last_fetched_round()
+        last_fetched_round = RoundManagement.get_last_fetched_round(working_directory)
 
         if not round_id == last_fetched_round:
             listener.on_new_round(round_id, RunnerActions.deploy_to_production.short_name)
@@ -35,7 +38,7 @@ class RoundManagement:
         with open(description_file_path, "w+") as output:
             output.write(description)
 
-        audit_stream.print("Challenge description saved to file: {}/{}.".format(CHALLENGES_FOLDER, description_file_name))
+        audit_stream.log("Challenge description saved to file: {}/{}.".format(CHALLENGES_FOLDER, description_file_name))
 
         with open(os.path.join(challenges_path, "XR.txt"), "w+") as output:
             output.write(label)

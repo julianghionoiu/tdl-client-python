@@ -3,7 +3,7 @@ import unirest
 
 class ChallengeServerClient:
 
-    def  __init__(self, hostname, port, journey_id, use_colours):
+    def __init__(self, hostname, port, journey_id, use_colours):
         self._journey_id = journey_id
         self._accept_header = 'text/coloured' if use_colours else 'text/not-coloured'
         self._url = "http://{0}:{1}".format(hostname, port)

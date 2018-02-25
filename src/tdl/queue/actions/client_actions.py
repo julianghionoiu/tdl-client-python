@@ -4,6 +4,9 @@ from tdl.queue.actions.stop_action import StopAction
 
 class ClientActions:
 
+    def __init__(self):
+        pass
+
     @staticmethod
     def publish():
         return PublishAction

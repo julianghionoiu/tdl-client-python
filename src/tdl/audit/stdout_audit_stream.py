@@ -1,5 +1,8 @@
 class StdoutAuditStream:
 
+    def __init__(self):
+        pass
+
     @staticmethod
-    def print(value):
+    def log(value):
         print(value)

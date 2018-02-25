@@ -37,7 +37,7 @@ class QueueBasedImplementationRunnerAudit:
         self.start_line()
 
     def start_line(self):
-        self._lines.clear()
+        self._lines[:] = []
 
     def log(self, auditable):
         text = auditable.get_audit_text()
@@ -45,7 +45,7 @@ class QueueBasedImplementationRunnerAudit:
 
     def end_line(self):
         text = '\n'.join(self._lines)
-        self._audit_stream.print(text)
+        self._audit_stream.log(text)
 
     def log_exception(self, message, e):
         self.start_line()

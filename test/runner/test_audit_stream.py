@@ -3,7 +3,7 @@ class TestAuditStream:
     def __init__(self):
         self._total = ''
 
-    def print(self, s):
+    def log(self, s):
         self._total += '{}\n'.format(s)
 
     def get_log(self):

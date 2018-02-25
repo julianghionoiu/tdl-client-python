@@ -1,5 +1,8 @@
 class PublishAction:
 
+    def __init__(self):
+        pass
+
     @staticmethod
     def get_audit_text():
         return ''
