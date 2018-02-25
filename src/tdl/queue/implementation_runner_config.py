@@ -1,4 +1,4 @@
-from audit.stdout_audit_stream import StdoutAuditStream
+from tdl.audit.stdout_audit_stream import StdoutAuditStream
 
 
 class ImplementationRunnerConfig:

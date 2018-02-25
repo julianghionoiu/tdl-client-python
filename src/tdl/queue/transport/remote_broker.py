@@ -13,6 +13,7 @@ class RemoteBroker:
         self.conn.connect(wait=True)
         self.unique_id = unique_id
         self.request_timeout_millis = request_timeout_millis
+        self._timer = None
 
     def acknowledge(self, headers):
         self.conn.ack(headers['message-id'], headers['subscription'])

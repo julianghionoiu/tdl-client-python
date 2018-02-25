@@ -10,5 +10,5 @@ class Listener(ConnectionListener):
 
     def on_message(self, headers, message):
         self._stop_timer()
-        self._handling_strategy.process_next_message_from(self._remote_broker, headers, message)
+        self._handling_strategy.process_next_request_from(self._remote_broker, message)
         self._start_timer()
