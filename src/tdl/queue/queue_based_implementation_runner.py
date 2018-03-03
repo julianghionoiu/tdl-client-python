@@ -1,3 +1,4 @@
+import datetime
 from tdl.queue.processing_rules import ProcessingRules
 from tdl.queue.actions.publish_action import PublishAction
 from tdl.queue.transport.remote_broker import RemoteBroker
@@ -9,23 +10,33 @@ class QueueBasedImplementationRunner:
         self._config = config
         self._deploy_processing_rules = deploy_processing_rules
         self._audit = QueueBasedImplementationRunnerAudit(config.get_audit_stream())
+        self.total_processing_time_millis = None
 
     def run(self):
-        self._audit.log_line('Starting client')
+        start_time = datetime.datetime.now()
 
         try:
+            self._audit.log_line('Starting client')
+
             remote_broker = RemoteBroker(
                 self._config.get_hostname(),
                 self._config.get_port(),
                 self._config.get_unique_id(),
-                self._config.get_request_timeout_millis())
+                self._config.get_time_to_wait_for_request())
+
+            self._audit.log_line('Waiting for requests')
             remote_broker.subscribe(ApplyProcessingRules(self._deploy_processing_rules, self._audit))
 
             self._audit.log_line('Stopping client')
         except Exception as e:
             self._audit.log_exception('There was a problem processing messages', e)
 
-        self._audit.log_line('Stopping client')
+        end_time = datetime.datetime.now()
+
+        self.total_processing_time_millis = (end_time - start_time).total_seconds() * 1000.00
+
+    def get_request_timeout_millis(self):
+        self._config.get_time_to_wait_for_request()
 
 
 class QueueBasedImplementationRunnerAudit:

@@ -4,42 +4,53 @@ import time
 from behave import given, step, then, use_step_matcher, when
 from hamcrest import assert_that, contains_string, equal_to, is_
 from cStringIO import StringIO
-from tdl.client import Client
-from tdl.processing_rules import ProcessingRules
+from tdl.queue.implementation_runner_config import ImplementationRunnerConfig
+from tdl.queue.queue_based_implementation_runner import QueueBasedImplementationRunnerBuilder
+from tdl.queue.actions.client_actions import ClientActions
+
 
 use_step_matcher("re")
 
 
-# ~~~~~ Setup
+HOSTNAME = 'localhost'
+STOMP_PORT = 21613
 
 
 @given('I start with a clean broker and a client for user \"([^"]*)\"')
-def create_the_queues(context, username):
-    unique_id = username
+def create_the_queues(context, unique_id):
     context.request_queue = context.broker.add_queue('{}.req'.format(unique_id))
     context.request_queue.purge()
+
     context.response_queue = context.broker.add_queue('{}.resp'.format(unique_id))
     context.response_queue.purge()
-    hostname = 'localhost'
-    stomp_port = 21613
-    context.client = Client(hostname=hostname, unique_id=unique_id, port=stomp_port)
+
+    config = ImplementationRunnerConfig()\
+        .set_hostname(HOSTNAME)\
+        .set_port(STOMP_PORT)\
+        .set_unique_id(unique_id)
+
+    context.queue_implementation_runner_builder = QueueBasedImplementationRunnerBuilder()\
+        .set_config(config)
+    context.queue_implementation_runner = context.queue_implementation_runner_builder.create()
 
 
 @given("the broker is not available")
 def client_with_wrong_broker(context):
-    incorrect_hostname = '111'
-    stomp_port = 11613
-    unique_id = 'test@example.com'
-    context.client = Client(hostname=incorrect_hostname, unique_id=unique_id, port=stomp_port)
+    config = ImplementationRunnerConfig()\
+        .set_hostname('111')\
+        .set_port(STOMP_PORT)\
+        .set_unique_id('X')
+
+    context.queue_implementation_runner_builder = QueueBasedImplementationRunnerBuilder()\
+        .set_config(config)
 
 
 @then("the time to wait for requests is (\d+)ms")
 def check_time(context, expected_timeout):
     assert_that(
-        context.client.get_request_timeout_millis(),
+        context.queue_implementation_runner.get_request_timeout_millis(),
         is_(equal_to(int(expected_timeout))),
-        "The client request timeout has a different value."
-    )
+        "The client request timeout has a different value.")
 
 
 @then('the request queue is \"([^"]*)\"')
@@ -47,8 +58,7 @@ def check_request_queue(context, expected_value):
     assert_that(
         context.request_queue.get_name(),
         is_(equal_to(expected_value)),
-        "Request queue has a different value."
-    )
+        "Request queue has a different value.")
 
 
 @then('the response queue is \"([^"]*)\"')
@@ -104,19 +114,29 @@ def get_implementation(implementation_name):
         raise KeyError('Not a valid implementation reference: "' + implementation_name + "\"")
 
 
+CLIENT_ACTIONS = {
+    'publish': ClientActions.publish(),
+    'stop': ClientActions.stop()
+}
+
+
 @when("I go live with the following processing rules")
 def step_impl(context):
-    processing_rules = ProcessingRules()
     for row in context.table:
-        method = row[0]
-        user_implementation = get_implementation(row[1])
-        action = row[2]
-        processing_rules.on(method).call(user_implementation).then(action)
+        context.queue_implementation_runner_builder\
+            .with_solution_for(
+                row[0],
+                get_implementation(row[1]),
+                CLIENT_ACTIONS[row[2]])
+
+    context.queue_implementation_runner = context.queue_implementation_runner_builder.create()
 
     with Capturing() as context.stdout_capture:
-        context.client.go_live_with(processing_rules)
+        context.queue_implementation_runner.run()
+
 
 # ~~~~~ Assertions
+
 
 @then("the client should consume all requests")
 def request_queue_empty(context):
@@ -174,15 +194,15 @@ def response_queue_unchanged(context):
 
 
 @then("I should get no exception")
-def i_should_get_no_exception(context):
+def i_should_get_no_exception(_):
     # OBS if you get here there were no exceptions
     pass
 
 
 @then('the processing time should be lower than (\d+)ms')
 def processing_time_should_be_lower_than(context, num):
-    print("total_processing_time " + str(context.client.total_processing_time_millis))
-    assert(num > context.client.total_processing_time_millis)
+    print("total_processing_time " + str(context.queue_implementation_runner.total_processing_time_millis))
+    assert(num > context.queue_implementation_runner.total_processing_time_millis)
 
 
 # ~~~~ Helpers
