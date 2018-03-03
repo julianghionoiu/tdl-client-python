@@ -8,7 +8,6 @@ from tdl.queue.implementation_runner_config import ImplementationRunnerConfig
 from tdl.queue.queue_based_implementation_runner import QueueBasedImplementationRunnerBuilder
 from tdl.queue.actions.client_actions import ClientActions
 
-
 use_step_matcher("re")
 
 
@@ -131,8 +130,8 @@ def step_impl(context):
 
     context.queue_implementation_runner = context.queue_implementation_runner_builder.create()
 
-    with Capturing() as context.stdout_capture:
-        context.queue_implementation_runner.run()
+    # with Capturing() as context.stdout_capture:
+    context.queue_implementation_runner.run()
 
 
 # ~~~~~ Assertions

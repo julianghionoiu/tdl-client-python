@@ -5,10 +5,10 @@ class StopAction:
 
     @staticmethod
     def get_audit_text():
-        return '(NOT PUBLISHED'
+        return '(NOT PUBLISHED)'
 
     @staticmethod
-    def after_response():
+    def after_response(remote_broker, request, response):
         # Do nothing.
         pass
 

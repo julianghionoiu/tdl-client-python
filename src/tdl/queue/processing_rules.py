@@ -21,7 +21,7 @@ class ProcessingRules:
         processing_rule = self._rules[request.method]
 
         try:
-            result = processing_rule.user_implementation(request.params)
+            result = processing_rule.user_implementation(*request.params)
             return ValidResponse(request.id, result, processing_rule.client_action)
         except:
             return FatalErrorResponse('user implementation raised exception')

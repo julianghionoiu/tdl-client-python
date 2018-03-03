@@ -1,4 +1,5 @@
 from stomp import ConnectionListener
+from tdl.queue.abstractions.request import Request
 
 
 class Listener(ConnectionListener):
@@ -8,7 +9,9 @@ class Listener(ConnectionListener):
         self._start_timer = start_timer
         self._stop_timer = stop_timer
 
-    def on_message(self, headers, message):
+    def on_message(self, headers, message_json):
         self._stop_timer()
-        self._handling_strategy.process_next_request_from(self._remote_broker, message)
+        self._handling_strategy.process_next_request_from(
+            self._remote_broker,
+            Request.deserialize(message_json))
         self._start_timer()

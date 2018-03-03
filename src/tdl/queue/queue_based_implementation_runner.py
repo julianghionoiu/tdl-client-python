@@ -36,7 +36,7 @@ class QueueBasedImplementationRunner:
         self.total_processing_time_millis = (end_time - start_time).total_seconds() * 1000.00
 
     def get_request_timeout_millis(self):
-        self._config.get_time_to_wait_for_request()
+        return self._config.get_time_to_wait_for_request()
 
 
 class QueueBasedImplementationRunnerAudit:
