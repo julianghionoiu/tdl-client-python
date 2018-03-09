@@ -16,7 +16,7 @@ class ProcessingRules:
 
     def get_response_for(self, request):
         if request.method not in self._rules:
-            return FatalErrorResponse('method {0} did not match any processing rule'.format(request.method))
+            return FatalErrorResponse("method '{0}' did not match any processing rule".format(request.method))
 
         processing_rule = self._rules[request.method]
 
