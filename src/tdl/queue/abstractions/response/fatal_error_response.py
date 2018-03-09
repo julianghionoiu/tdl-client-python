@@ -8,4 +8,4 @@ class FatalErrorResponse:
         self.client_action = StopAction
 
     def get_audit_text(self):
-        return 'error = {0}'.format(self._message)
+        return 'error = "{0}"'.format(self._message)
