@@ -55,7 +55,7 @@ class QueueBasedImplementationRunnerAudit:
         self._lines.append(text)
 
     def end_line(self):
-        text = '\n'.join(self._lines)
+        text = ', '.join(self._lines)
         self._audit_stream.log(text)
 
     def log_exception(self, message, e):

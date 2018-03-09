@@ -3,16 +3,18 @@ import time
 
 from behave import given, step, then, use_step_matcher, when
 from hamcrest import assert_that, contains_string, equal_to, is_
-from cStringIO import StringIO
 from tdl.queue.implementation_runner_config import ImplementationRunnerConfig
 from tdl.queue.queue_based_implementation_runner import QueueBasedImplementationRunnerBuilder
 from tdl.queue.actions.client_actions import ClientActions
+from test.utils.logging.log_audit_stream import LogAuditStream
 
 use_step_matcher("re")
 
 
 HOSTNAME = 'localhost'
 STOMP_PORT = 21613
+
+LOG_AUDIT_STREAM = LogAuditStream()
 
 
 @given('I start with a clean broker and a client for user \"([^"]*)\"')
@@ -23,10 +25,13 @@ def create_the_queues(context, unique_id):
     context.response_queue = context.broker.add_queue('{}.resp'.format(unique_id))
     context.response_queue.purge()
 
+    LOG_AUDIT_STREAM.clear_log()
+
     config = ImplementationRunnerConfig()\
         .set_hostname(HOSTNAME)\
         .set_port(STOMP_PORT)\
-        .set_unique_id(unique_id)
+        .set_unique_id(unique_id)\
+        .set_audit_stream(LOG_AUDIT_STREAM)
 
     context.queue_implementation_runner_builder = QueueBasedImplementationRunnerBuilder()\
         .set_config(config)
@@ -35,13 +40,17 @@ def create_the_queues(context, unique_id):
 
 @given("the broker is not available")
 def client_with_wrong_broker(context):
+    LOG_AUDIT_STREAM.clear_log()
+
     config = ImplementationRunnerConfig()\
         .set_hostname('111')\
         .set_port(STOMP_PORT)\
-        .set_unique_id('X')
+        .set_unique_id('X')\
+        .set_audit_stream(LOG_AUDIT_STREAM)
 
     context.queue_implementation_runner_builder = QueueBasedImplementationRunnerBuilder()\
         .set_config(config)
+    context.queue_implementation_runner = context.queue_implementation_runner_builder.create()
 
 
 @then("the time to wait for requests is (\d+)ms")
@@ -130,9 +139,7 @@ def step_impl(context):
                 CLIENT_ACTIONS[row[2]])
 
     context.queue_implementation_runner = context.queue_implementation_runner_builder.create()
-
-    with Capturing() as context.stdout_capture:
-        context.queue_implementation_runner.run()
+    context.queue_implementation_runner.run()
 
 
 # ~~~~~ Assertions
@@ -154,9 +161,8 @@ def response_queue_contains_expected(context):
 def the_client_should_display_to_console(context):
     for row in context.table:
         assert_that(
-            context.stdout_capture.getvalue(),
-            contains_string(row[0])
-        )
+            LOG_AUDIT_STREAM.get_log(),
+            contains_string(row[0]))
 
 
 @step("the client should not display to console")
@@ -209,16 +215,3 @@ def processing_time_should_be_lower_than(context, num):
 
 def raise_(ex):
     raise ex
-
-
-class Capturing(list):
-    def __enter__(self):
-        self._stdout = sys.stdout
-        sys.stdout = self._stringio = StringIO()
-        return self
-
-    def __exit__(self, *args):
-        sys.stdout = self._stdout
-
-    def getvalue(self):
-        return self._stringio.getvalue()
