@@ -115,7 +115,8 @@ def get_implementation(implementation_name):
 
 CLIENT_ACTIONS = {
     'publish': ClientActions.publish(),
-    'stop': ClientActions.stop()
+    'stop': ClientActions.stop(),
+    'publish and stop': ClientActions.publish_and_stop()
 }
 
 
