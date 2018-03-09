@@ -21,6 +21,7 @@ class ProcessingRuleBuilder(object):
     def __init__(self, instance, method_name):
         self.instance = instance
         self.method_name = method_name
+        self.user_implementation = None
         
     def call(self, user_implementation):
         self.user_implementation = user_implementation

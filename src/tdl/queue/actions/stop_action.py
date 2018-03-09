@@ -8,7 +8,7 @@ class StopAction:
         return '(NOT PUBLISHED)'
 
     @staticmethod
-    def after_response(remote_broker, request, response):
+    def after_response(remote_broker, headers, response):
         # Do nothing.
         pass
 

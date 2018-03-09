@@ -100,7 +100,7 @@ class ApplyProcessingRules:
         self._processing_rules = processing_rules
         self._audit = audit
 
-    def process_next_request_from(self, remote_broker, request):
+    def process_next_request_from(self, remote_broker, headers, request):
         self._audit.start_line()
         self._audit.log(request)
 
@@ -112,6 +112,6 @@ class ApplyProcessingRules:
 
         self._audit.end_line()
 
-        client_action.after_response(remote_broker, request, response)
+        client_action.after_response(remote_broker, headers, response)
 
         return client_action.prepare_for_next_request(remote_broker)

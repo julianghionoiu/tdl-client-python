@@ -13,5 +13,6 @@ class Listener(ConnectionListener):
         self._stop_timer()
         self._handling_strategy.process_next_request_from(
             self._remote_broker,
+            headers,
             Request.deserialize(message_json))
         self._start_timer()

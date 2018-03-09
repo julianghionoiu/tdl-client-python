@@ -1,6 +1,7 @@
 import json
 from stomp import Connection
 from threading import Timer
+from collections import OrderedDict
 from tdl.queue.transport.listener import Listener
 
 
@@ -33,6 +34,14 @@ class RemoteBroker:
                 ack='client-individual'
         )
         self.start_timer()
+
+    def respond_to(self, headers, response):
+        self.acknowledge(headers)
+        self.publish(OrderedDict({
+            ('result', response.result),
+            ('error', None),
+            ('id', response.id)
+        }))
 
     def close(self):
         print('Stopping client')

@@ -8,9 +8,10 @@ class PublishAction:
         return ''
 
     @staticmethod
-    def after_response(remote_broker, request, response):
-        remote_broker.respond_to(request, response)  # TODO
+    def after_response(remote_broker, headers, response):
+        remote_broker.respond_to(headers, response)
 
     @staticmethod
     def prepare_for_next_request(remote_broker):
-        remote_broker.receive()  # TODO
+        # Do nothing.
+        pass
