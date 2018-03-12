@@ -3,7 +3,7 @@ from tdl.runner.runner_action import RunnerActions
 
 
 CHALLENGES_FOLDER = 'challenges'
-LAST_FETCHED_ROUND_PATH = "#{CHALLENGES_FOLDER}/XR.txt"
+LAST_FETCHED_ROUND_PATH = '{}/XR.txt'.format(CHALLENGES_FOLDER)
 
 
 class RoundManagement:
@@ -21,7 +21,7 @@ class RoundManagement:
         last_fetched_round = RoundManagement.get_last_fetched_round(working_directory)
 
         if not round_id == last_fetched_round:
-            listener.on_new_round(round_id, RunnerActions.deploy_to_production.short_name)
+            listener.on_new_round(round_id, RunnerActions.get_new_round_description.short_name)
 
         RoundManagement.display_and_save_description(round_id, raw_description, audit_stream, working_directory)
 

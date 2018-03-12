@@ -111,10 +111,10 @@ def server_interaction_should_look_like(context):
 
 
 @then('the file "(.*)" should contain')
-def the_file_should_contain(_, file_, text):
+def the_file_should_contain(, file_):
     with open(file_, 'r') as f:
         content = f.read()
-    assert_that(content, is_(text), 'Contents of the file is not what is expected')
+    assert_that(content, is_(context.text), 'Contents of the file is not what is expected')
 
 
 @then('the recording system should be notified with "(.*)"')
