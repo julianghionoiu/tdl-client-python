@@ -7,3 +7,7 @@ def before_all(context):
         '28161',
         'TEST.BROKER'
     )
+
+
+def before_feature(context, _):
+    context.action_provider_callback = lambda: None

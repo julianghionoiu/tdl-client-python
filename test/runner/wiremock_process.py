@@ -8,6 +8,10 @@ class WiremockProcess:
         self._base_url = 'http://{}:{}'.format(hostname, port)
 
     def create_new_mapping(self, config):
+        body = config.get('responseBody')
+        if body:
+            body = body.replace('\\n', '\n')
+
         request = {
             'request': {
                 'urlPattern': config.get('endpointMatches'),
@@ -15,7 +19,7 @@ class WiremockProcess:
                 'method': config.get('method')
             },
             'response': {
-                'body': config.get('responseBody').replace('\\n', '\n'),
+                'body': body,
                 'statusMessage': config.get('statusMessage'),
                 'status': config.get('status')
             }

@@ -111,10 +111,10 @@ def server_interaction_should_look_like(context):
 
 
 @then('the file "(.*)" should contain')
-def the_file_should_contain(, file_):
+def the_file_should_contain(context, file_):
     with open(file_, 'r') as f:
         content = f.read()
-    assert_that(content, is_(context.text), 'Contents of the file is not what is expected')
+    assert_that(content, is_(context.text.rstrip()), 'Contents of the file is not what is expected')
 
 
 @then('the recording system should be notified with "(.*)"')
@@ -129,15 +129,15 @@ def the_implementation_runner_should_be_run_with_provided_implementations(contex
     assert_that(total, not contains_string(context.implementation_runner_message))
 
 
-@then('the server interaction should contain the following lines:')
-def the_server_interaction_should_contain_the_following_lines(_, expected_output):
+@then('the server interaction should contain the following lines')
+def the_server_interaction_should_contain_the_following_lines(context):
     total = audit_stream.get_log()
-    lines = expected_output.split('\n')
+    lines = context.text.split('\n')
     for line in lines:
         assert_that(total, not contains_string(line), 'Expected string is not contained in output')
 
 
 @then('the client should not ask the user for input')
-def the_client_should_not_ask_the_user_for_input():
+def the_client_should_not_ask_the_user_for_input(_):
     total = audit_stream.get_log()
     assert_that(total, not contains_string('Selected action is:'))
