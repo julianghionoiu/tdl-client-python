@@ -1,5 +1,6 @@
 from tdl.util import Util
 
+
 class ValidResponse:
 
     def __init__(self, id_, result, client_action):

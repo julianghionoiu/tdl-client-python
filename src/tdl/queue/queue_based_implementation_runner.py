@@ -25,7 +25,7 @@ class QueueBasedImplementationRunner:
                 self._config.get_time_to_wait_for_request())
 
             self._audit.log_line('Waiting for requests')
-            remote_broker.subscribe(ApplyProcessingRules(self._deploy_processing_rules, self._audit))
+            remote_broker.subscribe(ApplyProcessingRules(self._deploy_processing_rules, self._audit), self._audit)
 
             self._audit.log_line('Stopping client')
         except Exception as e:

@@ -16,7 +16,7 @@ class Request:
             params=', '.join(list(map(lambda x: Util.compress_text(x), self.params))))
 
     @staticmethod
-    def deserialize(message_json):
+    def deserialize(message_json, audit):
         try:
             decoded_message = json.loads(message_json)
             return Request(
@@ -24,5 +24,5 @@ class Request:
                 decoded_message['params'],
                 decoded_message['id'])
         except:
-            print('Invalid message format')
+            audit.log_line('Invalid message format')
             raise

@@ -25,8 +25,8 @@ class RemoteBroker:
                 destination='{}.resp'.format(self.unique_id)
         )
 
-    def subscribe(self, handling_strategy):
-        listener = Listener(self, handling_strategy, self.start_timer, self.stop_timer)
+    def subscribe(self, handling_strategy, audit):
+        listener = Listener(self, handling_strategy, self.start_timer, self.stop_timer, audit)
         self.conn.set_listener('listener', listener)
         self.conn.subscribe(
                 destination='{}.req'.format(self.unique_id),
@@ -37,14 +37,13 @@ class RemoteBroker:
 
     def respond_to(self, headers, response):
         self.acknowledge(headers)
-        self.publish(OrderedDict({
+        self.publish(OrderedDict([
             ('result', response.result),
             ('error', None),
             ('id', response.id)
-        }))
+        ]))
 
     def close(self):
-        print('Stopping client')
         self.conn.disconnect()
 
     def is_connected(self):

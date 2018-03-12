@@ -14,4 +14,4 @@ class StopAction:
 
     @staticmethod
     def prepare_for_next_request(remote_broker):
-        remote_broker.close()  # TODO
+        remote_broker.close()
