@@ -40,13 +40,13 @@ def journey_is(context, journey_id):
 @given('the challenge server exposes the following endpoints')
 def configure_challenge_server_endpoints(context):
     for config in context.table:
-        context.challenge_server_stub.create_new_mapping(config)
+        context.challenge_server_stub.create_new_mapping(config.as_dict())
 
 
 @given('the recording server exposes the following endpoints')
 def configure_recording_server_endpoints(context):
     for config in context.table:
-        context.recording_server_stub.create_new_mapping(config)
+        context.recording_server_stub.create_new_mapping(config.as_dict())
 
 
 @given('the action input comes from a provider returning "(.*)"')
@@ -55,7 +55,7 @@ def action_input_comes_from_a_provider_returning(context, s):
 
 
 @given('the challenges folder is empty')
-def challenges_folder_is_empty():
+def challenges_folder_is_empty(_):
     shutil.rmtree('challenges', ignore_errors=True)
 
 
@@ -104,10 +104,10 @@ def user_starts_client(context):
         .start()
 
 
-@then('the server interaction should look like:')
-def server_interaction_should_look_like(_, expected_output):
-    total = audit_stream.get_log()
-    assert_that(total, is_(expected_output), 'Expected string is not contained in output')
+@then('the server interaction should look like')
+def server_interaction_should_look_like(context):
+    total = audit_stream.get_log().rstrip()
+    assert_that(total, is_(context.text), 'Expected string is not contained in output')
 
 
 @then('the file "(.*)" should contain')

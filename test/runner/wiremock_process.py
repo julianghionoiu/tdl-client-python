@@ -1,3 +1,4 @@
+import json
 import unirest
 
 
@@ -9,27 +10,28 @@ class WiremockProcess:
     def create_new_mapping(self, config):
         request = {
             'request': {
-                'urlPattern': config['endpointMatches'],
-                'url': config['endpointEquals'],
-                'method': config['method']
+                'urlPattern': config.get('endpointMatches'),
+                'url': config.get('endpointEquals'),
+                'method': config.get('method')
             },
             'response': {
-                'body': config['responseBody'],
-                'statusMessage': config['statusMessage'],
-                'status': config['status']
+                'body': config.get('responseBody').replace('\\n', '\n'),
+                'statusMessage': config.get('statusMessage'),
+                'status': config.get('status')
             }
         }
 
-        if config['acceptHeader']:
+        accept_header = config.get('acceptHeader')
+        if accept_header:
             request['request']['headers'] = {
                 'accept': {
-                    'contains': config['acceptHeader']
+                    'contains': accept_header
                 }
             }
 
         unirest.post('{}/__admin/mappings/new'.format(self._base_url),
                      headers={'Accept': 'application/json'},
-                     params=request)
+                     params=json.dumps(request))
 
     def reset(self):
         unirest.post('{}/__admin/reset'.format(self._base_url))
@@ -48,6 +50,6 @@ class WiremockProcess:
 
         response = unirest.post('{}/__admin/requests/count'.format(self._base_url),
                                 headers={'Accept': 'application/json'},
-                                params=request)
+                                params=json.dumps(request))
 
         return response.body['count']

@@ -18,16 +18,18 @@ class ChallengeServerClient:
         return self.get("roundDescription")
 
     def send_action(self, action):
-        encoded_path = unicode(self._journey_id, "UTF-8")
-        url = "http://{}/action/{}/{}".format(self._url, action, encoded_path)
+        encoded_path = self.encode(self._journey_id)
+        url = "{}/action/{}/{}".format(self._url, action, encoded_path)
         response = unirest.post(url, headers={"Accept": self._accept_header, "Accept-Charset": "UTF-8"})
         self.ensure_status_ok(response)
         return response.body
 
     def get(self, name):
-        journey_id_utf8 = unicode(self._journey_id, "UTF-8")
+        journey_id_utf8 = self.encode(self._journey_id)
 
-        url = "http://{}/{}/{}".format(self._url, name, journey_id_utf8)
+        url = "{}/{}/{}".format(self._url, name, journey_id_utf8)
+
+        print(url)
 
         response = unirest.get(url, headers={"Accept": self._accept_header, "Accept-Charset": "UTF-8"})
         self.ensure_status_ok(response)
@@ -52,6 +54,13 @@ class ChallengeServerClient:
     @staticmethod
     def is_other_error_response(response_status):
         return response_status < 200 or response_status > 300
+
+    @staticmethod
+    def encode(text):
+        try:
+            text = unicode(text, 'utf-8')
+        except TypeError:
+            return text
 
 
 class ClientErrorException(Exception):
