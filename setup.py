@@ -47,7 +47,16 @@ VERSION = "0.19.2"
 
 setup(
         name='tdl-client-python',
-        packages=['tdl'],
+        packages=[
+            'tdl',
+            'tdl.audit',
+            'tdl.queue',
+            'tdl.queue.abstractions',
+            'tdl.queue.abstractions.response',
+            'tdl.queue.actions',
+            'tdl.queue.transport',
+            'tdl.runner'
+        ],
         package_dir={'': 'src'},
         install_requires=['stomp.py==4.1.5','unirest==1.1.7'],
         version=VERSION,
