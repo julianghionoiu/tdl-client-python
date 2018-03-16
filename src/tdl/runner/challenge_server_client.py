@@ -26,11 +26,7 @@ class ChallengeServerClient:
 
     def get(self, name):
         journey_id_utf8 = self.encode(self._journey_id)
-
         url = "{}/{}/{}".format(self._url, name, journey_id_utf8)
-
-        print(url)
-
         response = unirest.get(url, headers={"Accept": self._accept_header, "Accept-Charset": "UTF-8"})
         self.ensure_status_ok(response)
         return response.body
@@ -58,7 +54,7 @@ class ChallengeServerClient:
     @staticmethod
     def encode(text):
         try:
-            text = unicode(text, 'utf-8')
+            return unicode(text, 'utf-8')
         except TypeError:
             return text
 

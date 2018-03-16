@@ -95,6 +95,7 @@ class QueueBasedImplementationRunnerBuilder:
             on(method_name).\
             call(user_implementation).\
             then(action)
+        return self
 
     def create(self):
         return QueueBasedImplementationRunner(self._config, self._deploy_processing_rules)
