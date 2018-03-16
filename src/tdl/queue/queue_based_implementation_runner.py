@@ -83,7 +83,7 @@ class QueueBasedImplementationRunnerBuilder:
 
         self._deploy_processing_rules.\
             on('display_description').\
-            call(lambda _: 'OK').\
+            call(lambda *_: 'OK').\
             then(PublishAction)
 
     def set_config(self, config):
