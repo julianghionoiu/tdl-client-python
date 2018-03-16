@@ -17,6 +17,7 @@ class RemoteBroker:
         self._timer = None
 
     def acknowledge(self, headers):
+        print('acknowledge id:{} subscription:{}'.format(headers['message-id'], headers['subscription']))
         self.conn.ack(headers['message-id'], headers['subscription'])
 
     def publish(self, response):
@@ -42,6 +43,10 @@ class RemoteBroker:
             ('error', None),
             ('id', response.id)
         ]))
+
+    def stop(self):
+        self.conn.unsubscribe(1)
+        self.conn.remove_listener('listener')
 
     def close(self):
         self.conn.disconnect()

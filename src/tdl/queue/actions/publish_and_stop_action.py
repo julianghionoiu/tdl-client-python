@@ -13,4 +13,5 @@ class PublishAndStopAction:
 
     @staticmethod
     def prepare_for_next_request(remote_broker):
+        remote_broker.stop()
         remote_broker.close()
