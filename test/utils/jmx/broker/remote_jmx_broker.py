@@ -1,6 +1,7 @@
 from jolokia_session import JolokiaSession
 from remote_jmx_queue import RemoteJmxQueue
 
+
 class RemoteJmxBroker(object):
     @staticmethod
     def connect(host, port, broker_name):
