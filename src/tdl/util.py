@@ -1,8 +1,5 @@
 class Util:
 
-    def __init__(self):
-        pass
-
     @staticmethod
     def compress_text(parameter):
         if not isinstance(parameter, basestring):

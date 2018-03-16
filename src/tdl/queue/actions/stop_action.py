@@ -1,8 +1,5 @@
 class StopAction:
 
-    def __init__(self):
-        pass
-
     @staticmethod
     def get_audit_text():
         return '(NOT PUBLISHED)'

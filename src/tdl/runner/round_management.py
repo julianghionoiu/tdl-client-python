@@ -8,9 +8,6 @@ LAST_FETCHED_ROUND_PATH = '{}/XR.txt'.format(CHALLENGES_FOLDER)
 
 class RoundManagement:
 
-    def __init__(self):
-        pass
-
     @staticmethod
     def save_description(listener, raw_description, audit_stream, working_directory):
         if "\n" not in raw_description:
