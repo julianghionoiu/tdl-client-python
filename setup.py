@@ -1,7 +1,7 @@
 from setuptools import setup
 
 # !!!!!!! MAJOR DEBT - This is hardcoded
-VERSION = "0.20.3"
+VERSION = "0.20.4"
 
 # ~~~~~ Create configuration
 
