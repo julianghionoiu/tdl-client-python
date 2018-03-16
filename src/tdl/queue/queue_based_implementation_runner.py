@@ -90,11 +90,12 @@ class QueueBasedImplementationRunnerBuilder:
         self._config = config
         return self
 
-    def with_solution_for(self, method_name, user_implementation, action):
+    def with_solution_for(self, method_name, user_implementation, action = PublishAction):
         self._deploy_processing_rules.\
             on(method_name).\
             call(user_implementation).\
             then(action)
+        return self
 
     def create(self):
         return QueueBasedImplementationRunner(self._config, self._deploy_processing_rules)
