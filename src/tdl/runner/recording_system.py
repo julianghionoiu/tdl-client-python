@@ -11,7 +11,7 @@ class RecordingSystem:
         self._recording_required = recording_required
 
     def is_recording_system_ok(self):
-        return self._recording_required if RecordingSystem.is_running() else True
+        return RecordingSystem.is_running() if self._recording_required else True
 
     @staticmethod
     def is_running():
