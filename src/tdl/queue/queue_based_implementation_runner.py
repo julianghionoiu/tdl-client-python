@@ -1,4 +1,5 @@
 import datetime
+import time
 from tdl.queue.processing_rules import ProcessingRules
 from tdl.queue.actions.publish_action import PublishAction
 from tdl.queue.transport.remote_broker import RemoteBroker
@@ -25,7 +26,12 @@ class QueueBasedImplementationRunner:
                 self._config.get_time_to_wait_for_request())
 
             self._audit.log_line('Waiting for requests')
+
             remote_broker.subscribe(ApplyProcessingRules(self._deploy_processing_rules, self._audit), self._audit)
+
+            # DEBT - this is just to block.
+            while remote_broker.is_connected():
+                time.sleep(0.1)
 
             self._audit.log_line('Stopping client')
         except Exception as e:

@@ -17,7 +17,6 @@ class RemoteBroker:
         self._timer = None
 
     def acknowledge(self, headers):
-        print('acknowledge id:{} subscription:{}'.format(headers['message-id'], headers['subscription']))
         self.conn.ack(headers['message-id'], headers['subscription'])
 
     def publish(self, response):
