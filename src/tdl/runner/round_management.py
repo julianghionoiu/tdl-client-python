@@ -18,7 +18,7 @@ class RoundManagement:
         last_fetched_round = RoundManagement.get_last_fetched_round(working_directory)
 
         if not round_id == last_fetched_round:
-            listener.on_new_round(round_id, RunnerActions.get_new_round_description.short_name)
+            listener.on_new_round(round_id)
 
         RoundManagement.display_and_save_description(round_id, raw_description, audit_stream, working_directory)
 

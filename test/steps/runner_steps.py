@@ -104,7 +104,7 @@ def user_starts_client(context):
         .start()
 
 
-@then('the server interaction should look like')
+@then('the server interaction should look like[:]?')
 def server_interaction_should_look_like(context):
     total = audit_stream.get_log().rstrip()
     assert_that(total, is_(context.text), 'Expected string is not contained in output')
@@ -129,7 +129,7 @@ def the_implementation_runner_should_be_run_with_provided_implementations(contex
     assert_that(total, not contains_string(context.implementation_runner_message))
 
 
-@then('the server interaction should contain the following lines')
+@then('the server interaction should contain the following lines[:]?')
 def the_server_interaction_should_contain_the_following_lines(context):
     total = audit_stream.get_log()
     lines = context.text.split('\n')

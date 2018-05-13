@@ -7,6 +7,9 @@ class RunnerAction:
 
 class RunnerActions:
 
+    def __init__(self):
+        pass
+
     get_new_round_description = RunnerAction("new", "get_new_round_description", "stop")
     deploy_to_production = RunnerAction("deploy", "deploy_to_production", "publish")
 

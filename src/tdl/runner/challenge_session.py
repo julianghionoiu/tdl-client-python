@@ -1,4 +1,5 @@
 from tdl.runner.challenge_server_client import ChallengeServerClient,ClientErrorException,OtherCommunicationException,ServerErrorException
+from tdl.runner.recording_system import RecordingEvent
 from tdl.runner.recording_system import RecordingSystem
 from tdl.runner.round_management import RoundManagement
 
@@ -75,11 +76,15 @@ class ChallengeSession:
         if user_input == 'deploy':
             self._runner.run()
             last_fetched_round = RoundManagement.get_last_fetched_round(self._config.get_working_directory())
-            self._recording_system.deploy_notify_event(last_fetched_round)
+            self._recording_system.notify_event(last_fetched_round, RecordingEvent.ROUND_SOLUTION_DEPLOY)
 
         return self.execute_action(user_input)
 
     def execute_action(self, user_input):
         action_feedback = self._challenge_server_client.send_action(user_input)
+        if 'Round time for' in action_feedback:
+            last_fetched_round = RoundManagement.get_last_fetched_round(self._config.get_working_directory())
+            self._recording_system.notify_event(last_fetched_round, RecordingEvent.ROUND_COMPLETED)
+
         self._audit_stream.log(action_feedback)
         return self._challenge_server_client.get_round_description()

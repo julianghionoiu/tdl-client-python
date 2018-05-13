@@ -1,8 +1,14 @@
 import unirest
-from tdl.runner.runner_action import RunnerActions
-
 
 RECORDING_SYSTEM_ENDPOINT = "http://localhost:41375"
+
+class RecordingEvent:
+    def __init__(self):
+        pass
+
+    ROUND_START = 'new'
+    ROUND_SOLUTION_DEPLOY = 'deploy'
+    ROUND_COMPLETED = 'done'
 
 
 class RecordingSystem:
@@ -25,15 +31,15 @@ class RecordingSystem:
 
         return False
 
-    def notify_event(self, last_fetched_round, action_name):
-        print('Notify round "{}", event "{}"'.format(last_fetched_round, action_name))
+    def notify_event(self, round_id, event_name):
+        print('Notify round "{}", event "{}"'.format(round_id, event_name))
 
         if not self.is_recording_system_ok():
             return
 
         try:
             response = unirest.post("{}/notify".format(RECORDING_SYSTEM_ENDPOINT),
-                                    params="{}/{}".format(last_fetched_round, action_name))
+                                    params="{}/{}".format(round_id, event_name))
 
             if response.code != 200:
                 print("Recording system returned code: {}".format(response.code))
@@ -45,8 +51,5 @@ class RecordingSystem:
         except Exception as e:
             print("Could not reach recording system: {}".format(str(e)))
 
-    def on_new_round(self, round_id, short_name):
-        self.notify_event(round_id, short_name)
-
-    def deploy_notify_event(self, last_fetched_round):
-        self.notify_event(last_fetched_round, RunnerActions.deploy_to_production.short_name)
+    def on_new_round(self, round_id):
+        self.notify_event(round_id, RecordingEvent.ROUND_START)
