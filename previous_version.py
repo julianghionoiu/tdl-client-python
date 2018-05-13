@@ -1,8 +1,10 @@
-PREVIOUS_VERSION = '0.20.4'
+from __future__ import print_function
+
+PREVIOUS_VERSION = '0.21.0'
 
 
 def main():
-    print PREVIOUS_VERSION
+    print(PREVIOUS_VERSION)
 
 
 if __name__ == "__main__":
