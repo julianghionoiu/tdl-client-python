@@ -27,11 +27,13 @@ git push origin "v${CURRENT_VERSION}"
 echo "Pushed tag to Git origin. It will now trigger the deployment pipeline."
 
 cat > "${VERSION_FILE}" <<-EOF
+from __future__ import print_function
+
 PREVIOUS_VERSION = '$CURRENT_VERSION'
 
 
 def main():
-    print PREVIOUS_VERSION
+    print(PREVIOUS_VERSION)
 
 
 if __name__ == "__main__":
