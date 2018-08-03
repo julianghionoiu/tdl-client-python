@@ -33,9 +33,11 @@ class RecordingSystem:
         return False
 
     def notify_event(self, round_id, event_name):
+        print('Notify round "{}", event "{}"'.format(round_id, event_name))
         self._send_post("/notify", round_id + "/" + event_name)
 
     def tell_to_stop(self):
+        print('Stopping recording system')
         self._send_post("/stop", "")
 
     def _send_post(self, endpoint, body):
