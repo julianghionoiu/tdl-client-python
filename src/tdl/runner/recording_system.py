@@ -2,6 +2,7 @@ import unirest
 
 RECORDING_SYSTEM_ENDPOINT = "http://localhost:41375"
 
+
 class RecordingEvent:
     def __init__(self):
         pass
@@ -32,14 +33,18 @@ class RecordingSystem:
         return False
 
     def notify_event(self, round_id, event_name):
-        print('Notify round "{}", event "{}"'.format(round_id, event_name))
+        self._send_post("/notify", round_id + "/" + event_name)
 
+    def tell_to_stop(self):
+        self._send_post("/stop", "")
+
+    def _send_post(self, endpoint, body):
         if not self.is_recording_system_ok():
             return
 
         try:
-            response = unirest.post("{}/notify".format(RECORDING_SYSTEM_ENDPOINT),
-                                    params="{}/{}".format(round_id, event_name))
+            response = unirest.post("{}{}".format(RECORDING_SYSTEM_ENDPOINT, endpoint),
+                                    params=body)
 
             if response.code != 200:
                 print("Recording system returned code: {}".format(response.code))

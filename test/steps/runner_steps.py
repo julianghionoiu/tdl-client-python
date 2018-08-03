@@ -1,17 +1,16 @@
-from behave import given, then, use_step_matcher, when
-from hamcrest import assert_that, contains_string, is_
 import shutil
 
-from test.runner.test_audit_stream import TestAuditStream
+from behave import given, then, use_step_matcher, when
+from hamcrest import assert_that, contains_string, is_
+
+from tdl.runner.challenge_session import ChallengeSession
+from tdl.runner.challenge_session_config import ChallengeSessionConfig
 from test.runner.noisy_implementation_runner import NoisyImplementationRunner
 from test.runner.quiet_implementation_runner import QuietImplementationRunner
+from test.runner.test_audit_stream import TestAuditStream
 from test.runner.wiremock_process import WiremockProcess
-from tdl.runner.challenge_session_config import ChallengeSessionConfig
-from tdl.runner.challenge_session import ChallengeSession
-
 
 use_step_matcher("re")
-
 
 audit_stream = TestAuditStream()
 implementation_runner = QuietImplementationRunner()
@@ -91,16 +90,16 @@ def challenge_server_returns_for_all_requests(context, return_code):
 
 @when('user starts client')
 def user_starts_client(context):
-    config = ChallengeSessionConfig.for_journey(context.journey_id)\
-        .with_server_hostname(context.challenge_hostname)\
-        .with_port(context.challenge_port)\
-        .with_colours(True)\
-        .with_audit_stream(audit_stream)\
+    config = ChallengeSessionConfig.for_journey(context.journey_id) \
+        .with_server_hostname(context.challenge_hostname) \
+        .with_port(context.challenge_port) \
+        .with_colours(True) \
+        .with_audit_stream(audit_stream) \
         .with_recording_system_should_be_on(True)
 
-    ChallengeSession.for_runner(implementation_runner)\
-        .with_config(config)\
-        .with_action_provider(context.action_provider_callback)\
+    ChallengeSession.for_runner(implementation_runner) \
+        .with_config(config) \
+        .with_action_provider(context.action_provider_callback) \
         .start()
 
 
@@ -120,6 +119,12 @@ def the_file_should_contain(context, file_):
 @then('the recording system should be notified with "(.*)"')
 def the_recording_system_should_be_notified_with(context, expected_output):
     endpoint_was_hit = context.recording_server_stub.verify_endpoint_was_hit('/notify', 'POST', expected_output)
+    assert_that(endpoint_was_hit, is_(True))
+
+
+@then("the recording system should have received a stop signal")
+def recording_system_should_receive_stop_signal(context):
+    endpoint_was_hit = context.recording_server_stub.verify_endpoint_was_hit('/stop', 'POST', "")
     assert_that(endpoint_was_hit, is_(True))
 
 

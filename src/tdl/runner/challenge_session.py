@@ -1,4 +1,5 @@
-from tdl.runner.challenge_server_client import ChallengeServerClient,ClientErrorException,OtherCommunicationException,ServerErrorException
+from tdl.runner.challenge_server_client import ChallengeServerClient, ClientErrorException, OtherCommunicationException, \
+    ServerErrorException
 from tdl.runner.recording_system import RecordingEvent
 from tdl.runner.recording_system import RecordingSystem
 from tdl.runner.round_management import RoundManagement
@@ -45,16 +46,39 @@ class ChallengeSession:
             self._config.get_use_colours())
 
         try:
-            should_continue = self.check_status_of_challenge()
-            if should_continue:
-                user_input = self._user_input_callback()
-                self._audit_stream.log('Selected action is: {}'.format(user_input))
-                round_description = self.execute_user_action(user_input)
-                RoundManagement.save_description(
-                    self._recording_system,
-                    round_description,
-                    self._audit_stream,
-                    self._config.get_working_directory())
+            journey_progress = self._challenge_server_client.get_journey_progress()
+            self._audit_stream.log(journey_progress)
+
+            available_actions = self._challenge_server_client.get_available_actions()
+            self._audit_stream.log(available_actions)
+
+            no_actions_available = 'No actions available.' in available_actions
+            if no_actions_available:
+                self._recording_system.tell_to_stop()
+                return
+
+            user_input = self._user_input_callback()
+            self._audit_stream.log('Selected action is: {}'.format(user_input))
+            if user_input == 'deploy':
+                self._runner.run()
+                last_fetched_round = RoundManagement.get_last_fetched_round(self._config.get_working_directory())
+                self._recording_system.notify_event(last_fetched_round, RecordingEvent.ROUND_SOLUTION_DEPLOY)
+
+            action_feedback = self._challenge_server_client.send_action(user_input)
+            if 'Round time for' in action_feedback:
+                last_fetched_round = RoundManagement.get_last_fetched_round(self._config.get_working_directory())
+                self._recording_system.notify_event(last_fetched_round, RecordingEvent.ROUND_COMPLETED)
+
+            if 'All challenges have been completed' in action_feedback:
+                self._recording_system.tell_to_stop()
+
+            self._audit_stream.log(action_feedback)
+            round_description = self._challenge_server_client.get_round_description()
+            RoundManagement.save_description(
+                self._recording_system,
+                round_description,
+                self._audit_stream,
+                self._config.get_working_directory())
 
         except ClientErrorException as e:
             self._audit_stream.log(e)
@@ -63,28 +87,3 @@ class ChallengeSession:
         except OtherCommunicationException:
             self._audit_stream.log('Client threw an unexpected error. Try again.')
 
-    def check_status_of_challenge(self):
-        journey_progress = self._challenge_server_client.get_journey_progress()
-        self._audit_stream.log(journey_progress)
-
-        available_actions = self._challenge_server_client.get_available_actions()
-        self._audit_stream.log(available_actions)
-
-        return 'No actions available.' not in available_actions
-
-    def execute_user_action(self, user_input):
-        if user_input == 'deploy':
-            self._runner.run()
-            last_fetched_round = RoundManagement.get_last_fetched_round(self._config.get_working_directory())
-            self._recording_system.notify_event(last_fetched_round, RecordingEvent.ROUND_SOLUTION_DEPLOY)
-
-        return self.execute_action(user_input)
-
-    def execute_action(self, user_input):
-        action_feedback = self._challenge_server_client.send_action(user_input)
-        if 'Round time for' in action_feedback:
-            last_fetched_round = RoundManagement.get_last_fetched_round(self._config.get_working_directory())
-            self._recording_system.notify_event(last_fetched_round, RecordingEvent.ROUND_COMPLETED)
-
-        self._audit_stream.log(action_feedback)
-        return self._challenge_server_client.get_round_description()
