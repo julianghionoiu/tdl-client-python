@@ -13,7 +13,6 @@ setup(
             'tdl.queue',
             'tdl.queue.abstractions',
             'tdl.queue.abstractions.response',
-            'tdl.queue.actions',
             'tdl.queue.transport',
             'tdl.runner'
         ],

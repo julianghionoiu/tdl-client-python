@@ -21,6 +21,7 @@ Python client to connect to the central kata server.
 Setting up a development environment:
 ```
 pip install tox
+pip install coverage
 cd tdl-client-python
 git submodule update --init
 tox -e devenv

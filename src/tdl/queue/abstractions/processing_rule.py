@@ -1,5 +1,4 @@
 class ProcessingRule:
 
-    def __init__(self, user_implementation, client_action):
+    def __init__(self, user_implementation):
         self.user_implementation = user_implementation
-        self.client_action = client_action
