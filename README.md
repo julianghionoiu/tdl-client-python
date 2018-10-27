@@ -6,6 +6,18 @@
 
 # tdl-client-python Development
 
+### Submodules
+
+Project contains submodules as mentioned in the `.gitmodules` file:
+
+- broker
+- tdl/client (gets cloned into test/features)
+- wiremock 
+
+### Getting started
+
+Python client to connect to the central kata server.
+
 Setting up a development environment:
 ```
 pip install tox
@@ -31,6 +43,19 @@ Link: http://www.marinamele.com/2014/05/install-python-virtualenv-virtualenvwrap
 
 # Testing
 
+#### Manual 
+
+To run the acceptance tests, start the WireMock servers:
+```
+python wiremock/wiremock-wrapper.py start 41375
+python wiremock/wiremock-wrapper.py start 8222
+```
+
+And the broker, with:
+```
+python broker/activemq-wrapper.py start
+```
+
 All test require the ActiveMQ broker to be started.
 The following commands are available for the broker.
 
@@ -42,6 +67,20 @@ python wiremock/wiremock-wrapper.py start 8222
 
 Run tests with `tox`.
 
+Stopping the above services would be the same, using the `stop` command instead of the `start` command.
+
+#### Automatic (via script)
+
+Start and stop the wiremocks and broker services with the below:
+ 
+```bash
+./startExternalDependencies.sh
+``` 
+
+```bash
+./stopExternalDependencies.sh
+``` 
+
 # Cleanup
 
 Stop external dependencies
@@ -50,6 +89,12 @@ python ./broker/activemq-wrapper.py stop
 python wiremock/wiremock-wrapper.py stop 41375
 python wiremock/wiremock-wrapper.py stop 8222
 ```
+
+or
+
+```bash
+./stopExternalDependencies.sh
+``` 
 
 
 # To release
