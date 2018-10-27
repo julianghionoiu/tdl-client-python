@@ -117,8 +117,9 @@ class ApplyProcessingRules:
 
         #TODO: check again if this is correctly done, come back later to complete it
         if isinstance(response, FatalErrorResponse):
+            remote_broker.stop()
             self._audit.end_line()
-            return FatalErrorResponse
+            return None
 
         remote_broker.respond_to(headers, response)
 
