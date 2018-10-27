@@ -190,15 +190,15 @@ def step_impl(context):
 def step_impl(context):
     assert_that(
         context.request_queue.get_size(),
-        is_(equal_to(1)),
-        "Wrong number of requests have been consumed."
+        is_(equal_to(context.request_count - 1)),
+        "Wrong number of responses have been received."
     )
 
 @then(u'the client should publish one response')
 def step_impl(context):
     assert_that(
         context.response_queue.get_size(),
-        is_(equal_to(1)),
+        is_(equal_to(context.request_count - 2)),
         "Wrong number of requests have been published."
     )
 
