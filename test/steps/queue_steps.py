@@ -84,7 +84,7 @@ def check_response_queue(context, expected_value):
     )
 
 
-@given("I receive the following requests")
+@given("I receive the following requests[:]?")
 def initialize_request_queue(context):
     for row in context.table:
         payload = row[0]
@@ -128,7 +128,7 @@ def get_implementation(implementation_name):
         raise KeyError('Not a valid implementation reference: "' + implementation_name + "\"")
 
 
-@when("I go live with the following processing rules")
+@when("I go live with the following processing rules[:]?")
 def step_impl(context):
     for row in context.table:
         context.queue_implementation_runner_builder\
@@ -148,14 +148,14 @@ def request_queue_empty(context):
     assert_that(context.request_queue.get_size(), is_(equal_to(0)), "Requests have not been consumed")
 
 
-@step("the client should publish the following responses")
+@step("the client should publish the following responses[:]?")
 def response_queue_contains_expected(context):
     expected_responses = [row[0] for row in context.table]
     assert_that(context.response_queue.get_message_contents(), is_(equal_to(expected_responses)),
                 "The responses are not correct")
 
 
-@then("the client should display to console")
+@then("the client should display to console[:]?")
 def the_client_should_display_to_console(context):
     for row in context.table:
         assert_that(
