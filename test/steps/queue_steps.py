@@ -50,7 +50,8 @@ def client_with_wrong_broker(context):
         .set_hostname('111')\
         .set_port(STOMP_PORT)\
         .set_request_queue_name('X')\
-        .set_response_queue_name('Y')\
+        .set_response_queue_name('Y') \
+        .set_time_to_wait_for_request(200) \
         .set_audit_stream(LOG_AUDIT_STREAM)
 
     context.queue_implementation_runner_builder = QueueBasedImplementationRunnerBuilder()\
