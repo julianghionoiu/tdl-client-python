@@ -16,4 +16,5 @@ class Listener(ConnectionListener):
             self._remote_broker,
             headers,
             Request.deserialize(message_json, self._audit))
+
         self._start_timer()

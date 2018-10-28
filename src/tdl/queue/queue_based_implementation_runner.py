@@ -1,8 +1,8 @@
 import datetime
 import time
 from tdl.queue.processing_rules import ProcessingRules
-from tdl.queue.actions.publish_action import PublishAction
 from tdl.queue.transport.remote_broker import RemoteBroker
+from tdl.queue.abstractions.response.fatal_error_response import FatalErrorResponse
 
 
 class QueueBasedImplementationRunner:
@@ -22,7 +22,8 @@ class QueueBasedImplementationRunner:
             remote_broker = RemoteBroker(
                 self._config.get_hostname(),
                 self._config.get_port(),
-                self._config.get_unique_id(),
+                self._config.get_request_queue_name(),
+                self._config.get_response_queue_name(),
                 self._config.get_time_to_wait_for_request())
 
             self._audit.log_line('Waiting for requests')
@@ -84,17 +85,17 @@ class QueueBasedImplementationRunnerBuilder:
         self._deploy_processing_rules.\
             on('display_description').\
             call(lambda *_: 'OK').\
-            then(PublishAction)
+            build()
 
     def set_config(self, config):
         self._config = config
         return self
 
-    def with_solution_for(self, method_name, user_implementation, action = PublishAction):
+    def with_solution_for(self, method_name, user_implementation):
         self._deploy_processing_rules.\
             on(method_name).\
             call(user_implementation).\
-            then(action)
+            build()
         return self
 
     def create(self):
@@ -114,11 +115,14 @@ class ApplyProcessingRules:
         response = self._processing_rules.get_response_for(request)
         self._audit.log(response)
 
-        client_action = response.client_action
-        self._audit.log(client_action)
+        #TODO: check again if this is correctly done, come back later to complete it
+        if isinstance(response, FatalErrorResponse):
+            remote_broker.stop()
+            self._audit.end_line()
+            return None
+
+        remote_broker.respond_to(headers, response)
 
         self._audit.end_line()
 
-        client_action.after_response(remote_broker, headers, response)
-
-        return client_action.prepare_for_next_request(remote_broker)
+        return None

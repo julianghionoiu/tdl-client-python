@@ -8,7 +8,8 @@ class ImplementationRunnerConfig:
         self._request_timeout_millis = 500
         self._audit_stream = StdoutAuditStream
         self._hostname = None
-        self._unique_id = None
+        self._request_queue_name = None
+        self._response_queue_name = None
 
     def set_hostname(self, hostname):
         self._hostname = hostname
@@ -18,8 +19,12 @@ class ImplementationRunnerConfig:
         self._port = port
         return self
 
-    def set_unique_id(self, unique_id):
-        self._unique_id = unique_id
+    def set_request_queue_name(self, queue_name):
+        self._request_queue_name = queue_name
+        return self
+
+    def set_response_queue_name(self, queue_name):
+        self._response_queue_name = queue_name
         return self
 
     def set_time_to_wait_for_request(self, time_to_wait_for_request):
@@ -36,8 +41,11 @@ class ImplementationRunnerConfig:
     def get_port(self):
         return self._port
 
-    def get_unique_id(self):
-        return self._unique_id
+    def get_request_queue_name(self):
+        return self._request_queue_name
+
+    def get_response_queue_name(self):
+        return self._response_queue_name
 
     def get_time_to_wait_for_request(self):
         return self._request_timeout_millis

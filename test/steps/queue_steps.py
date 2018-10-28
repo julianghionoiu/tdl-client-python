@@ -5,7 +5,6 @@ from behave import given, step, then, use_step_matcher, when
 from hamcrest import assert_that, contains_string, equal_to, is_
 from tdl.queue.implementation_runner_config import ImplementationRunnerConfig
 from tdl.queue.queue_based_implementation_runner import QueueBasedImplementationRunnerBuilder
-from tdl.queue.actions.client_actions import ClientActions
 from test.utils.logging.log_audit_stream import LogAuditStream
 
 use_step_matcher("re")
@@ -16,21 +15,26 @@ STOMP_PORT = 21613
 
 LOG_AUDIT_STREAM = LogAuditStream()
 
+REQUEST_QUEUE_NAME = 'some-user-req'
+RESPONSE_QUEUE_NAME = 'some-user-resp'
 
-@given('I start with a clean broker and a client for user \"([^"]*)\"')
-def create_the_queues(context, unique_id):
-    context.request_queue = context.broker.add_queue('{}.req'.format(unique_id))
+@given('I start with a clean broker having a request and a response queue')
+def broker_setup(context):
+    context.request_queue = context.broker.add_queue(REQUEST_QUEUE_NAME)
     context.request_queue.purge()
 
-    context.response_queue = context.broker.add_queue('{}.resp'.format(unique_id))
+    context.response_queue = context.broker.add_queue(RESPONSE_QUEUE_NAME)
     context.response_queue.purge()
 
     LOG_AUDIT_STREAM.clear_log()
 
+@given('a client that connects to the queues')
+def client_setup(context):
     config = ImplementationRunnerConfig()\
         .set_hostname(HOSTNAME)\
         .set_port(STOMP_PORT)\
-        .set_unique_id(unique_id)\
+        .set_request_queue_name(REQUEST_QUEUE_NAME)\
+        .set_response_queue_name(RESPONSE_QUEUE_NAME)\
         .set_audit_stream(LOG_AUDIT_STREAM)
 
     context.queue_implementation_runner_builder = QueueBasedImplementationRunnerBuilder()\
@@ -45,7 +49,9 @@ def client_with_wrong_broker(context):
     config = ImplementationRunnerConfig()\
         .set_hostname('111')\
         .set_port(STOMP_PORT)\
-        .set_unique_id('X')\
+        .set_request_queue_name('X')\
+        .set_response_queue_name('Y') \
+        .set_time_to_wait_for_request(200) \
         .set_audit_stream(LOG_AUDIT_STREAM)
 
     context.queue_implementation_runner_builder = QueueBasedImplementationRunnerBuilder()\
@@ -78,7 +84,7 @@ def check_response_queue(context, expected_value):
     )
 
 
-@given("I receive the following requests")
+@given("I receive the following requests[:]?")
 def initialize_request_queue(context):
     for row in context.table:
         payload = row[0]
@@ -122,21 +128,13 @@ def get_implementation(implementation_name):
         raise KeyError('Not a valid implementation reference: "' + implementation_name + "\"")
 
 
-CLIENT_ACTIONS = {
-    'publish': ClientActions.publish(),
-    'stop': ClientActions.stop(),
-    'publish and stop': ClientActions.publish_and_stop()
-}
-
-
-@when("I go live with the following processing rules")
+@when("I go live with the following processing rules[:]?")
 def step_impl(context):
     for row in context.table:
         context.queue_implementation_runner_builder\
             .with_solution_for(
                 row[0],
-                get_implementation(row[1]),
-                CLIENT_ACTIONS[row[2]])
+                get_implementation(row[1]))
 
     context.queue_implementation_runner = context.queue_implementation_runner_builder.create()
     context.queue_implementation_runner.run()
@@ -150,14 +148,14 @@ def request_queue_empty(context):
     assert_that(context.request_queue.get_size(), is_(equal_to(0)), "Requests have not been consumed")
 
 
-@step("the client should publish the following responses")
+@step("the client should publish the following responses[:]?")
 def response_queue_contains_expected(context):
     expected_responses = [row[0] for row in context.table]
     assert_that(context.response_queue.get_message_contents(), is_(equal_to(expected_responses)),
                 "The responses are not correct")
 
 
-@then("the client should display to console")
+@then("the client should display to console[:]?")
 def the_client_should_display_to_console(context):
     for row in context.table:
         assert_that(
@@ -189,6 +187,21 @@ def step_impl(context):
         "Wrong number of requests have been consumed."
     )
 
+@then(u'the client should consume one request')
+def step_impl(context):
+    assert_that(
+        context.request_queue.get_size(),
+        is_(equal_to(context.request_count - 1)),
+        "Wrong number of responses have been received."
+    )
+
+@then(u'the client should publish one response')
+def step_impl(context):
+    assert_that(
+        context.response_queue.get_size(),
+        is_(equal_to(context.request_count - 2)),
+        "Wrong number of requests have been published."
+    )
 
 @step("the client should not publish any response")
 def response_queue_unchanged(context):

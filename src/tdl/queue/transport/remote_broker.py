@@ -6,13 +6,14 @@ from tdl.queue.transport.listener import Listener
 
 
 class RemoteBroker:
-    def __init__(self, hostname, port, unique_id, request_timeout_millis):
+    def __init__(self, hostname, port, request_queue_name, response_queue_name, request_timeout_millis):
         hosts = [(hostname, port)]
         connect_timeout = 10
         self.conn = Connection(host_and_ports=hosts, timeout=connect_timeout)
         self.conn.start()
         self.conn.connect(wait=True)
-        self.unique_id = unique_id
+        self.request_queue_name = request_queue_name
+        self.response_queue_name = response_queue_name
         self.request_timeout_millis = request_timeout_millis
         self._timer = None
 
@@ -22,14 +23,14 @@ class RemoteBroker:
     def publish(self, response):
         self.conn.send(
                 body=json.dumps(response, separators=(',', ':')),
-                destination='{}.resp'.format(self.unique_id)
+                destination=self.response_queue_name
         )
 
     def subscribe(self, handling_strategy, audit):
         listener = Listener(self, handling_strategy, self.start_timer, self.stop_timer, audit)
         self.conn.set_listener('listener', listener)
         self.conn.subscribe(
-                destination='{}.req'.format(self.unique_id),
+                destination=self.request_queue_name,
                 id=1,
                 ack='client-individual'
         )

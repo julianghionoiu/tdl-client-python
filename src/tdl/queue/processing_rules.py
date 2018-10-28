@@ -8,8 +8,8 @@ class ProcessingRules:
     def __init__(self):
         self._rules = {}
 
-    def add(self, method_name, user_implementation, client_action):
-        self._rules[method_name] = ProcessingRule(user_implementation, client_action)
+    def add(self, method_name, user_implementation):
+        self._rules[method_name] = ProcessingRule(user_implementation)
 
     def on(self, method_name):
         return ProcessingRulesBuilder(self, method_name)
@@ -22,7 +22,7 @@ class ProcessingRules:
 
         try:
             result = processing_rule.user_implementation(*request.params)
-            return ValidResponse(request.id, result, processing_rule.client_action)
+            return ValidResponse(request.id, result)
         except Exception as e:
             print(e.message)
             return FatalErrorResponse('user implementation raised exception')
@@ -39,5 +39,5 @@ class ProcessingRulesBuilder:
         self._user_implementation = user_implementation
         return self
 
-    def then(self, client_action):
-        self._instance.add(self._method_name, self._user_implementation, client_action)
+    def build(self):
+        self._instance.add(self._method_name, self._user_implementation)
