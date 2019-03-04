@@ -1,5 +1,4 @@
-import unirest
-
+import requests
 
 class ChallengeServerClient:
 
@@ -20,14 +19,14 @@ class ChallengeServerClient:
     def send_action(self, action):
         encoded_path = self.encode(self._journey_id)
         url = "{}/action/{}/{}".format(self._url, action, encoded_path)
-        response = unirest.post(url, headers={"Accept": self._accept_header, "Accept-Charset": "UTF-8"})
+        response = requests.post(url, headers={"Accept": self._accept_header, "Accept-Charset": "UTF-8"})
         self.ensure_status_ok(response)
         return response.body
 
     def get(self, name):
         journey_id_utf8 = self.encode(self._journey_id)
         url = "{}/{}/{}".format(self._url, name, journey_id_utf8)
-        response = unirest.get(url, headers={"Accept": self._accept_header, "Accept-Charset": "UTF-8"})
+        response = requests.get(url, headers={"Accept": self._accept_header, "Accept-Charset": "UTF-8"})
         self.ensure_status_ok(response)
         return response.body
 
@@ -54,7 +53,7 @@ class ChallengeServerClient:
     @staticmethod
     def encode(text):
         try:
-            return unicode(text, 'utf-8')
+            return str(text, 'utf-8')
         except TypeError:
             return text
 

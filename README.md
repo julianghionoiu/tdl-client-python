@@ -42,6 +42,15 @@ tox -- -n 'Should not timeout prematurely'
 
 Link: http://www.marinamele.com/2014/05/install-python-virtualenv-virtualenvwrapper-mavericks.html
 
+# Build
+
+## Requirements
+
+- `Python 3.7` (support for `Python 2.x` has been dropped)
+- `pip` (ensure it supports `Python 3.7`)
+
+Install dependencies `pip install -r requirements.txt`
+
 # Testing
 
 #### Manual 

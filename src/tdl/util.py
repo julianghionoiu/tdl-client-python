@@ -2,7 +2,7 @@ class Util:
 
     @staticmethod
     def compress_text(parameter):
-        if not isinstance(parameter, basestring):
+        if not isinstance(parameter, str):
             return str(parameter)
         lines = str(parameter).split('\n')
         if len(lines) == 1:

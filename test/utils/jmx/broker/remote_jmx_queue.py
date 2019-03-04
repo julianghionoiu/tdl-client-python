@@ -35,10 +35,10 @@ class RemoteJmxQueue(object):
             'operation': 'browse()',
         }
         result = self.jolokia_session.request(operation)
-        if result[0].has_key('Text'):
-            return map(lambda r : r['Text'], result)
+        if 'Text' in result[0]:
+            return [r['Text'] for r in result]
         else:
-            return map(lambda r : str(bytearray(r['BodyPreview'])), result)
+            return [str(bytearray(r['BodyPreview'])) for r in result]
 
     def purge(self):
         operation = {

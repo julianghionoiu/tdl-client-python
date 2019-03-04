@@ -1,4 +1,4 @@
-import unirest
+import requests
 
 RECORDING_SYSTEM_ENDPOINT = "http://localhost:41375"
 
@@ -23,17 +23,17 @@ class RecordingSystem:
     @staticmethod
     def is_running():
         try:
-            response = unirest.get("{}/status".format(RECORDING_SYSTEM_ENDPOINT))
+            response = requests.get("{}/status".format(RECORDING_SYSTEM_ENDPOINT))
 
             if response.code == 200 and response.body.startswith("OK"):
                 return True
         except Exception as e:
-            print("Could not reach recording system: {}".format(str(e)))
+            print(("Could not reach recording system: {}".format(str(e))))
 
         return False
 
     def notify_event(self, round_id, event_name):
-        print('Notify round "{}", event "{}"'.format(round_id, event_name))
+        print(('Notify round "{}", event "{}"'.format(round_id, event_name)))
         self._send_post("/notify", round_id + "/" + event_name)
 
     def tell_to_stop(self):
@@ -45,18 +45,18 @@ class RecordingSystem:
             return
 
         try:
-            response = unirest.post("{}{}".format(RECORDING_SYSTEM_ENDPOINT, endpoint),
+            response = requests.post("{}{}".format(RECORDING_SYSTEM_ENDPOINT, endpoint),
                                     params=body)
 
             if response.code != 200:
-                print("Recording system returned code: {}".format(response.code))
+                print(("Recording system returned code: {}".format(response.code)))
                 return
 
             if not response.body.startswith("ACK"):
-                print("Recording system returned body: {}".format(response.body))
+                print(("Recording system returned body: {}".format(response.body)))
 
         except Exception as e:
-            print("Could not reach recording system: {}".format(str(e)))
+            print(("Could not reach recording system: {}".format(str(e))))
 
     def on_new_round(self, round_id):
         self.notify_event(round_id, RecordingEvent.ROUND_START)

@@ -1,5 +1,5 @@
 import json
-import unirest
+import requests
 
 
 class WiremockProcess:
@@ -33,12 +33,12 @@ class WiremockProcess:
                 }
             }
 
-        unirest.post('{}/__admin/mappings/new'.format(self._base_url),
+        requests.post('{}/__admin/mappings/new'.format(self._base_url),
                      headers={'Accept': 'application/json'},
                      params=json.dumps(request))
 
     def reset(self):
-        unirest.post('{}/__admin/reset'.format(self._base_url))
+        requests.post('{}/__admin/reset'.format(self._base_url))
 
     def verify_endpoint_was_hit(self, endpoint, method_type, body):
         return self.count_requests_with_endpoint(endpoint, method_type, body) == 1
@@ -52,7 +52,7 @@ class WiremockProcess:
         if body:
             request['bodyPatterns'] = [{'equalTo': body}]
 
-        response = unirest.post('{}/__admin/requests/count'.format(self._base_url),
+        response = requests.post('{}/__admin/requests/count'.format(self._base_url),
                                 headers={'Accept': 'application/json'},
                                 params=json.dumps(request))
 

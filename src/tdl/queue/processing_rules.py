@@ -24,7 +24,7 @@ class ProcessingRules:
             result = processing_rule.user_implementation(*request.params)
             return ValidResponse(request.id, result)
         except Exception as e:
-            print(e.message)
+            print((e.message))
             return FatalErrorResponse('user implementation raised exception')
 
 

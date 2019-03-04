@@ -95,7 +95,7 @@ def initialize_request_queue(context):
 
 @given("I receive (\d+) identical requests like")
 def receive_multiple_identical_request(context, num):
-    for x in xrange(int(num)):
+    for x in range(int(num)):
         for row in context.table:
             payload = row[0]
             context.request_queue.send_text_message(payload)
@@ -165,9 +165,9 @@ def the_client_should_display_to_console(context):
 
 @step("the client should not display to console")
 def the_client_should_not_display_to_console(context):
-    print(context.table.headings[0])
+    print((context.table.headings[0]))
     for row in context.table:
-        print(row[0])
+        print((row[0]))
 
 
 @then("the client should not consume any request")
@@ -179,7 +179,7 @@ def request_queue_unchanged(context):
     )
 
 
-@then(u'the client should consume first request')
+@then('the client should consume first request')
 def step_impl(context):
     assert_that(
         context.request_queue.get_size(),
@@ -187,7 +187,7 @@ def step_impl(context):
         "Wrong number of requests have been consumed."
     )
 
-@then(u'the client should consume one request')
+@then('the client should consume one request')
 def step_impl(context):
     assert_that(
         context.request_queue.get_size(),
@@ -195,7 +195,7 @@ def step_impl(context):
         "Wrong number of responses have been received."
     )
 
-@then(u'the client should publish one response')
+@then('the client should publish one response')
 def step_impl(context):
     assert_that(
         context.response_queue.get_size(),
@@ -220,7 +220,7 @@ def i_should_get_no_exception(_):
 
 @then('the processing time should be lower than (\d+)ms')
 def processing_time_should_be_lower_than(context, num):
-    print("total_processing_time " + str(context.queue_implementation_runner.total_processing_time_millis))
+    print(("total_processing_time " + str(context.queue_implementation_runner.total_processing_time_millis)))
     assert(num > context.queue_implementation_runner.total_processing_time_millis)
 
 
