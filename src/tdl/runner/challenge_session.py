@@ -1,8 +1,8 @@
-from tdl.runner.challenge_server_client import ChallengeServerClient, ClientErrorException, OtherCommunicationException, \
+from src.tdl.runner.challenge_server_client import ChallengeServerClient, ClientErrorException, OtherCommunicationException, \
     ServerErrorException
-from tdl.runner.recording_system import RecordingEvent
-from tdl.runner.recording_system import RecordingSystem
-from tdl.runner.round_management import RoundManagement
+from src.tdl.runner.recording_system import RecordingEvent
+from src.tdl.runner.recording_system import RecordingSystem
+from src.tdl.runner.round_management import RoundManagement
 
 class ChallengeSession:
 

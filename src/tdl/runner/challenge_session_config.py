@@ -1,4 +1,4 @@
-from tdl.audit.stdout_audit_stream import StdoutAuditStream
+from src.tdl.audit.stdout_audit_stream import StdoutAuditStream
 
 
 class ChallengeSessionConfig:

@@ -3,8 +3,8 @@ import shutil
 from behave import given, then, use_step_matcher, when
 from hamcrest import assert_that, contains_string, is_
 
-from tdl.runner.challenge_session import ChallengeSession
-from tdl.runner.challenge_session_config import ChallengeSessionConfig
+from src.tdl.runner.challenge_session import ChallengeSession
+from src.tdl.runner.challenge_session_config import ChallengeSessionConfig
 from test.runner.noisy_implementation_runner import NoisyImplementationRunner
 from test.runner.quiet_implementation_runner import QuietImplementationRunner
 from test.runner.test_audit_stream import TestAuditStream
