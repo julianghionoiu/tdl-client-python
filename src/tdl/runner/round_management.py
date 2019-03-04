@@ -1,5 +1,5 @@
 import os
-from tdl.runner.runner_action import RunnerActions
+from src.tdl.runner.runner_action import RunnerActions
 
 
 CHALLENGES_FOLDER = 'challenges'

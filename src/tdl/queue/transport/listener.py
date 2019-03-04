@@ -1,5 +1,5 @@
 from stomp import ConnectionListener
-from tdl.queue.abstractions.request import Request
+from src.tdl.queue.abstractions.request import Request
 
 
 class Listener(ConnectionListener):

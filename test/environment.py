@@ -1,4 +1,4 @@
-from .utils.jmx.broker.remote_jmx_broker import RemoteJmxBroker
+from utils.jmx.broker.remote_jmx_broker import RemoteJmxBroker
 
 
 def before_all(context):

@@ -2,7 +2,7 @@ import json
 from stomp import Connection
 from threading import Timer
 from collections import OrderedDict
-from tdl.queue.transport.listener import Listener
+from src.tdl.queue.transport.listener import Listener
 
 
 class RemoteBroker:

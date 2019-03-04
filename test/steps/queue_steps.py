@@ -3,8 +3,8 @@ import time
 
 from behave import given, step, then, use_step_matcher, when
 from hamcrest import assert_that, contains_string, equal_to, is_
-from tdl.queue.implementation_runner_config import ImplementationRunnerConfig
-from tdl.queue.queue_based_implementation_runner import QueueBasedImplementationRunnerBuilder
+from src.tdl.queue.implementation_runner_config import ImplementationRunnerConfig
+from src.tdl.queue.queue_based_implementation_runner import QueueBasedImplementationRunnerBuilder
 from test.utils.logging.log_audit_stream import LogAuditStream
 
 use_step_matcher("re")
