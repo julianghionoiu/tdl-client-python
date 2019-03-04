@@ -17,7 +17,7 @@ setup(
             'tdl.runner'
         ],
         package_dir={'': 'src'},
-        install_requires=['stomp.py==4.1.5','unirest==1.1.7'],
+        install_requires=['stomp.py==4.1.5'],
         version=VERSION,
         description='tdl-client-python',
         author='Tim Preece, Julian Ghionoiu',
