@@ -56,4 +56,7 @@ class WiremockProcess:
                                 headers={'Accept': 'application/json'},
                                 params=json.dumps(request))
 
+        if isinstance(response.content, bytes):
+            return '0'
+
         return response.content['count']
