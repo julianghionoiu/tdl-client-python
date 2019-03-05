@@ -1,4 +1,5 @@
 import requests
+import re
 
 RECORDING_SYSTEM_ENDPOINT = "http://localhost:41375"
 
@@ -11,6 +12,12 @@ class RecordingEvent:
     ROUND_SOLUTION_DEPLOY = 'deploy'
     ROUND_COMPLETED = 'done'
 
+
+def bytes_to_str(content):
+    result = str(content)
+    result = re.sub("b'", "", result)
+    result = re.sub("\\n'", "", result)
+    return result
 
 class RecordingSystem:
 
@@ -25,7 +32,8 @@ class RecordingSystem:
         try:
             response = requests.get("{}/status".format(RECORDING_SYSTEM_ENDPOINT))
 
-            if response.code == 200 and response.body.startswith("OK"):
+            content = bytes_to_str(response.content)
+            if response.status_code == 200 and content.startswith("OK"):
                 return True
         except Exception as e:
             print(("Could not reach recording system: {}".format(str(e))))
@@ -48,12 +56,12 @@ class RecordingSystem:
             response = requests.post("{}{}".format(RECORDING_SYSTEM_ENDPOINT, endpoint),
                                     params=body)
 
-            if response.code != 200:
-                print(("Recording system returned code: {}".format(response.code)))
+            if response.status_code != 200:
+                print(("Recording system returned code: {}".format(response.status_code)))
                 return
-
-            if not response.body.startswith("ACK"):
-                print(("Recording system returned body: {}".format(response.body)))
+            content = bytes_to_str(response.content)
+            if not content.startswith("ACK"):
+                print(("Recording system returned body: {}".format(content)))
 
         except Exception as e:
             print(("Could not reach recording system: {}".format(str(e))))
