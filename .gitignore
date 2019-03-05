@@ -70,3 +70,6 @@ devenv/
 
 # Rope project folder
 .ropeproject
+
+# Ignore Python virtualenv
+venv
