@@ -17,6 +17,7 @@ def bytes_to_str(content):
     result = str(content)
     result = re.sub("b'", "", result)
     result = re.sub("\\n'", "", result)
+    result = re.sub("'", "", result)
     return result
 
 class RecordingSystem:
