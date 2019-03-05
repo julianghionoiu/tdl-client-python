@@ -1,4 +1,5 @@
 import requests
+import re
 
 RECORDING_SYSTEM_ENDPOINT = "http://localhost:41375"
 
@@ -11,6 +12,12 @@ class RecordingEvent:
     ROUND_SOLUTION_DEPLOY = 'deploy'
     ROUND_COMPLETED = 'done'
 
+
+def bytes_to_str(content):
+    result = str(content)
+    result = re.sub("b'", "", result)
+    result = re.sub("\\n'", "", result)
+    return result
 
 class RecordingSystem:
 
