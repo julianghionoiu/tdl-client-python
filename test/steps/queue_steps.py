@@ -221,7 +221,7 @@ def i_should_get_no_exception(_):
 @then('the processing time should be lower than (\d+)ms')
 def processing_time_should_be_lower_than(context, num):
     print(("total_processing_time " + str(context.queue_implementation_runner.total_processing_time_millis)))
-    assert(num > context.queue_implementation_runner.total_processing_time_millis)
+    assert(int(num) > context.queue_implementation_runner.total_processing_time_millis)
 
 
 # ~~~~ Helpers
