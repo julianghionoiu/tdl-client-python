@@ -56,4 +56,4 @@ class WiremockProcess:
                                 headers={'Accept': 'application/json'},
                                 params=json.dumps(request))
 
-        return response.body['count']
+        return response.content['count']

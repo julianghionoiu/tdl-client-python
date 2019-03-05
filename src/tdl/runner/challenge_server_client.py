@@ -21,22 +21,22 @@ class ChallengeServerClient:
         url = "{}/action/{}/{}".format(self._url, action, encoded_path)
         response = requests.post(url, headers={"Accept": self._accept_header, "Accept-Charset": "UTF-8"})
         self.ensure_status_ok(response)
-        return response.body
+        return response.content
 
     def get(self, name):
         journey_id_utf8 = self.encode(self._journey_id)
         url = "{}/{}/{}".format(self._url, name, journey_id_utf8)
         response = requests.get(url, headers={"Accept": self._accept_header, "Accept-Charset": "UTF-8"})
         self.ensure_status_ok(response)
-        return response.body
+        return response.content
 
     def ensure_status_ok(self, response):
-        if self.is_client_error(response.code):
-            raise ClientErrorException(response.body)
-        elif self.is_server_error(response.code):
-            raise ServerErrorException(response.body)
-        elif self.is_other_error_response(response.code):
-            raise OtherCommunicationException(response.body)
+        if self.is_client_error(response.status_code):
+            raise ClientErrorException(response.content)
+        elif self.is_server_error(response.status_code):
+            raise ServerErrorException(response.content)
+        elif self.is_other_error_response(response.status_code):
+            raise OtherCommunicationException(response.content)
 
     @staticmethod
     def is_client_error(response_status):

@@ -25,7 +25,7 @@ class RecordingSystem:
         try:
             response = requests.get("{}/status".format(RECORDING_SYSTEM_ENDPOINT))
 
-            if response.code == 200 and response.body.startswith("OK"):
+            if response.status_code == 200 and response.content.startswith("OK"):
                 return True
         except Exception as e:
             print(("Could not reach recording system: {}".format(str(e))))
@@ -48,12 +48,12 @@ class RecordingSystem:
             response = requests.post("{}{}".format(RECORDING_SYSTEM_ENDPOINT, endpoint),
                                     params=body)
 
-            if response.code != 200:
-                print(("Recording system returned code: {}".format(response.code)))
+            if response.status_code != 200:
+                print(("Recording system returned code: {}".format(response.status_code)))
                 return
 
-            if not response.body.startswith("ACK"):
-                print(("Recording system returned body: {}".format(response.body)))
+            if not response.content.startswith("ACK"):
+                print(("Recording system returned body: {}".format(response.content)))
 
         except Exception as e:
             print(("Could not reach recording system: {}".format(str(e))))
