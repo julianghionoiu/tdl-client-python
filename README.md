@@ -31,11 +31,19 @@ $ behave
 ```
 
 Pass arguments to behave, e.g. to run a specific scenario,
+
 ```
 $ behave test/features/queue/QueueRunner.feature:154
 ```
 
+or
+
+```
+$ behave -n "Process message then publish"
+```
+
 See `behave` [docs](https://python-behave.readthedocs.io/en/latest/behave.html) for more details.
+
 
 # How to use Python virtualenvs
 
