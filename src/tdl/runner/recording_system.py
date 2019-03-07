@@ -1,5 +1,4 @@
 import requests
-import re
 
 RECORDING_SYSTEM_ENDPOINT = "http://localhost:41375"
 
@@ -15,9 +14,9 @@ class RecordingEvent:
 
 def bytes_to_str(content):
     result = str(content)
-    result = re.sub("b'", "", result)
-    result = re.sub("\\n'", "", result)
-    result = re.sub("'", "", result)
+    result = result.replace("b'", "")
+    result = result.replace("\\n'", "")
+    result = result.replace("'", "")
     return result
 
 class RecordingSystem:
