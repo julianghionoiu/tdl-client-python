@@ -1,5 +1,9 @@
-from utils.jmx.broker.remote_jmx_broker import RemoteJmxBroker
+import sys, os
+test_dir = os.path.dirname(__file__)
+src_dir = os.path.join(os.path.dirname(test_dir), 'src')
+sys.path.append(src_dir)
 
+from utils.jmx.broker.remote_jmx_broker import RemoteJmxBroker
 
 def before_all(context):
     context.broker = RemoteJmxBroker.connect(

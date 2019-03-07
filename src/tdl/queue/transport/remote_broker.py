@@ -4,7 +4,7 @@ from threading import Timer
 
 from stomp import Connection
 
-from src.tdl.queue.transport.listener import Listener
+from tdl.queue.transport.listener import Listener
 
 
 class RemoteBroker:

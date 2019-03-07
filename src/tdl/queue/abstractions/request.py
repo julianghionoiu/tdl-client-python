@@ -1,6 +1,6 @@
 import json
 
-from src.tdl.util import Util
+from tdl.util import Util
 
 
 class Request:
