@@ -12,13 +12,6 @@ class RecordingEvent:
     ROUND_COMPLETED = 'done'
 
 
-def bytes_to_str(content):
-    result = str(content)
-    result = result.replace("b'", "")
-    result = result.replace("\\n'", "")
-    result = result.replace("'", "")
-    return result
-
 class RecordingSystem:
 
     def __init__(self, recording_required):
