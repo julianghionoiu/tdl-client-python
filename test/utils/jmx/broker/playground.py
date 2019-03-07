@@ -8,14 +8,14 @@ broker = RemoteJmxBroker.connect('localhost', '28161','TEST.BROKER')
 queue = broker.add_queue('test_queue')
 
 queue.send_text_message("Message from RemoteJmxQueue")
-print(("Queue size = {}".format(queue.get_size())))
-print(("Message contents = {}".format(queue.get_message_contents())))
+print("Queue size = {}".format(queue.get_size()))
+print("Message contents = {}".format(queue.get_message_contents()))
 
 queue.send_text_message("Another Message from RemoteJmxQueue")
-print(("Queue size = {}".format(queue.get_size())))
-print(("Message contents = {}".format(queue.get_message_contents())))
+print("Queue size = {}".format(queue.get_size()))
+print("Message contents = {}".format(queue.get_message_contents()))
 
 
 queue.purge()
 
-print(("Queue size = {}".format(queue.get_size())))
+print("Queue size = {}".format(queue.get_size()))

@@ -165,9 +165,9 @@ def the_client_should_display_to_console(context):
 
 @step("the client should not display to console")
 def the_client_should_not_display_to_console(context):
-    print((context.table.headings[0]))
+    print(context.table.headings[0])
     for row in context.table:
-        print((row[0]))
+        print(row[0])
 
 
 @then("the client should not consume any request")
@@ -220,7 +220,7 @@ def i_should_get_no_exception(_):
 
 @then('the processing time should be lower than (\d+)ms')
 def processing_time_should_be_lower_than(context, num):
-    print(("total_processing_time " + str(context.queue_implementation_runner.total_processing_time_millis)))
+    print("total_processing_time " + str(context.queue_implementation_runner.total_processing_time_millis))
     assert(int(num) > context.queue_implementation_runner.total_processing_time_millis)
 
 

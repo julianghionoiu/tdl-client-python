@@ -29,12 +29,12 @@ class RecordingSystem:
             if response.status_code == 200 and response_body.startswith("OK"):
                 return True
         except Exception as e:
-            print(("Could not reach recording system: {}".format(str(e))))
+            print("Could not reach recording system: {}".format(str(e)))
 
         return False
 
     def notify_event(self, round_id, event_name):
-        print(('Notify round "{}", event "{}"'.format(round_id, event_name)))
+        print('Notify round "{}", event "{}"'.format(round_id, event_name))
         self._send_post("/notify", round_id + "/" + event_name)
 
     def tell_to_stop(self):
@@ -50,14 +50,14 @@ class RecordingSystem:
                                     data=body)
 
             if response.status_code != 200:
-                print(("Recording system returned code: {}".format(response.status_code)))
+                print("Recording system returned code: {}".format(response.status_code))
                 return
             response_body = response.text
             if not response_body.startswith("ACK"):
-                print(("Recording system returned body: {}".format(response_body)))
+                print("Recording system returned body: {}".format(response_body))
 
         except Exception as e:
-            print(("Could not reach recording system: {}".format(str(e))))
+            print("Could not reach recording system: {}".format(str(e)))
 
     def on_new_round(self, round_id):
         self.notify_event(round_id, RecordingEvent.ROUND_START)
