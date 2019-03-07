@@ -3,8 +3,8 @@ import time
 
 from behave import given, step, then, use_step_matcher, when
 from hamcrest import assert_that, contains_string, equal_to, is_
-from tdl.queue.implementation_runner_config import ImplementationRunnerConfig
-from tdl.queue.queue_based_implementation_runner import QueueBasedImplementationRunnerBuilder
+from src.tdl.queue.implementation_runner_config import ImplementationRunnerConfig
+from src.tdl.queue.queue_based_implementation_runner import QueueBasedImplementationRunnerBuilder
 from test.utils.logging.log_audit_stream import LogAuditStream
 
 use_step_matcher("re")
@@ -95,7 +95,7 @@ def initialize_request_queue(context):
 
 @given("I receive (\d+) identical requests like")
 def receive_multiple_identical_request(context, num):
-    for x in xrange(int(num)):
+    for x in range(int(num)):
         for row in context.table:
             payload = row[0]
             context.request_queue.send_text_message(payload)
@@ -179,7 +179,7 @@ def request_queue_unchanged(context):
     )
 
 
-@then(u'the client should consume first request')
+@then('the client should consume first request')
 def step_impl(context):
     assert_that(
         context.request_queue.get_size(),
@@ -187,7 +187,7 @@ def step_impl(context):
         "Wrong number of requests have been consumed."
     )
 
-@then(u'the client should consume one request')
+@then('the client should consume one request')
 def step_impl(context):
     assert_that(
         context.request_queue.get_size(),
@@ -195,7 +195,7 @@ def step_impl(context):
         "Wrong number of responses have been received."
     )
 
-@then(u'the client should publish one response')
+@then('the client should publish one response')
 def step_impl(context):
     assert_that(
         context.response_queue.get_size(),
@@ -221,7 +221,7 @@ def i_should_get_no_exception(_):
 @then('the processing time should be lower than (\d+)ms')
 def processing_time_should_be_lower_than(context, num):
     print("total_processing_time " + str(context.queue_implementation_runner.total_processing_time_millis))
-    assert(num > context.queue_implementation_runner.total_processing_time_millis)
+    assert(int(num) > context.queue_implementation_runner.total_processing_time_millis)
 
 
 # ~~~~ Helpers

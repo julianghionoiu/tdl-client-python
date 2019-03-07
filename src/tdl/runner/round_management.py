@@ -1,5 +1,4 @@
 import os
-from tdl.runner.runner_action import RunnerActions
 
 
 CHALLENGES_FOLDER = 'challenges'
@@ -10,10 +9,10 @@ class RoundManagement:
 
     @staticmethod
     def save_description(listener, raw_description, audit_stream, working_directory):
-        if "\n" not in raw_description:
+        if '\n' not in raw_description:
             return
 
-        newline_index = raw_description.find("\n")
+        newline_index = raw_description.find('\n')
         round_id = raw_description[:newline_index]
         last_fetched_round = RoundManagement.get_last_fetched_round(working_directory)
 
@@ -28,7 +27,6 @@ class RoundManagement:
 
         if not os.path.exists(challenges_path):
             os.makedirs(challenges_path)
-
         description_file_name = '{}.txt'.format(label)
         description_file_path = os.path.join(challenges_path, description_file_name)
 

@@ -1,3 +1,5 @@
+import re
+
 class RemoteJmxQueue(object):
     def __init__(self, jolokia_session, broker_name, queue_name):
         self.name = queue_name
@@ -35,10 +37,16 @@ class RemoteJmxQueue(object):
             'operation': 'browse()',
         }
         result = self.jolokia_session.request(operation)
-        if result[0].has_key('Text'):
-            return map(lambda r : r['Text'], result)
+        if 'Text' in result[0]:
+            return [r['Text'] for r in result]
         else:
-            return map(lambda r : str(bytearray(r['BodyPreview'])), result)
+            return [self.bytearray_to_string(r) for r in result]
+
+    def bytearray_to_string(self, r):
+        result = str(bytearray(r['BodyPreview']))
+        result = re.sub("bytearray\(", "", result)
+        result = re.sub("\\'\)", "", result)
+        return re.sub("b\\'", "", result)
 
     def purge(self):
         operation = {

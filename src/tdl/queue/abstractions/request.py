@@ -1,4 +1,5 @@
 import json
+
 from tdl.util import Util
 
 
@@ -13,7 +14,7 @@ class Request:
         return 'id = {id}, req = {method}({params})'.format(
             id=self.id,
             method=self.method,
-            params=', '.join(list(map(lambda x: Util.compress_text(x), self.params))))
+            params=', '.join(list([Util.compress_text(x) for x in self.params])))
 
     @staticmethod
     def deserialize(message_json, audit):

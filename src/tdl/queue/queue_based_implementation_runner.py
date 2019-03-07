@@ -1,8 +1,9 @@
 import datetime
 import time
+
+from tdl.queue.abstractions.response.fatal_error_response import FatalErrorResponse
 from tdl.queue.processing_rules import ProcessingRules
 from tdl.queue.transport.remote_broker import RemoteBroker
-from tdl.queue.abstractions.response.fatal_error_response import FatalErrorResponse
 
 
 class QueueBasedImplementationRunner:

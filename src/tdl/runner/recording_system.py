@@ -1,4 +1,4 @@
-import unirest
+import requests
 
 RECORDING_SYSTEM_ENDPOINT = "http://localhost:41375"
 
@@ -23,9 +23,10 @@ class RecordingSystem:
     @staticmethod
     def is_running():
         try:
-            response = unirest.get("{}/status".format(RECORDING_SYSTEM_ENDPOINT))
+            response = requests.get("{}/status".format(RECORDING_SYSTEM_ENDPOINT))
 
-            if response.code == 200 and response.body.startswith("OK"):
+            response_body = response.text
+            if response.status_code == 200 and response_body.startswith("OK"):
                 return True
         except Exception as e:
             print("Could not reach recording system: {}".format(str(e)))
@@ -45,15 +46,15 @@ class RecordingSystem:
             return
 
         try:
-            response = unirest.post("{}{}".format(RECORDING_SYSTEM_ENDPOINT, endpoint),
-                                    params=body)
+            response = requests.post("{}{}".format(RECORDING_SYSTEM_ENDPOINT, endpoint),
+                                    data=body)
 
-            if response.code != 200:
-                print("Recording system returned code: {}".format(response.code))
+            if response.status_code != 200:
+                print("Recording system returned code: {}".format(response.status_code))
                 return
-
-            if not response.body.startswith("ACK"):
-                print("Recording system returned body: {}".format(response.body))
+            response_body = response.text
+            if not response_body.startswith("ACK"):
+                print("Recording system returned body: {}".format(response_body))
 
         except Exception as e:
             print("Could not reach recording system: {}".format(str(e)))

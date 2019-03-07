@@ -1,7 +1,7 @@
 from setuptools import setup
 
 # !!!!!!! MAJOR DEBT - This is hardcoded
-VERSION = "0.25.0"
+VERSION = "0.26.0"
 
 # ~~~~~ Create configuration
 
@@ -17,11 +17,11 @@ setup(
             'tdl.runner'
         ],
         package_dir={'': 'src'},
-        install_requires=['stomp.py==4.1.5','unirest==1.1.7'],
+        install_requires=['stomp.py==4.1.5'],
         version=VERSION,
         description='tdl-client-python',
-        author='Tim Preece, Julian Ghionoiu',
-        author_email='tdpreece@gmail.com, julian.ghionoiu@gmail.com',
+        author='Julian Ghionoiu',
+        author_email='julian.ghionoiu@gmail.com',
         url='https://github.com/julianghionoiu/tdl-client-python',
         download_url='https://github.com/julianghionoiu/tdl-client-python/archive/v{0}.tar.gz'.format(VERSION),
         keywords=['kata', 'activemq', 'rpc'],

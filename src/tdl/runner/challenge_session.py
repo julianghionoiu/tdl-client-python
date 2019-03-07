@@ -4,7 +4,6 @@ from tdl.runner.recording_system import RecordingEvent
 from tdl.runner.recording_system import RecordingSystem
 from tdl.runner.round_management import RoundManagement
 
-
 class ChallengeSession:
 
     @staticmethod
@@ -65,7 +64,7 @@ class ChallengeSession:
                 self._recording_system.notify_event(last_fetched_round, RecordingEvent.ROUND_SOLUTION_DEPLOY)
 
             action_feedback = self._challenge_server_client.send_action(user_input)
-            if 'Round time for' in action_feedback:
+            if 'Round time for' in str(action_feedback):
                 last_fetched_round = RoundManagement.get_last_fetched_round(self._config.get_working_directory())
                 self._recording_system.notify_event(last_fetched_round, RecordingEvent.ROUND_COMPLETED)
 
@@ -74,6 +73,7 @@ class ChallengeSession:
 
             self._audit_stream.log(action_feedback)
             round_description = self._challenge_server_client.get_round_description()
+            round_description = round_description
             RoundManagement.save_description(
                 self._recording_system,
                 round_description,

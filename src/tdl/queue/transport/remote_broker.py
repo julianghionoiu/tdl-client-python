@@ -1,7 +1,9 @@
 import json
-from stomp import Connection
-from threading import Timer
 from collections import OrderedDict
+from threading import Timer
+
+from stomp import Connection
+
 from tdl.queue.transport.listener import Listener
 
 

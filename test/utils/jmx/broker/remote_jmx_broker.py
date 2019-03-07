@@ -1,5 +1,5 @@
-from jolokia_session import JolokiaSession
-from remote_jmx_queue import RemoteJmxQueue
+from .jolokia_session import JolokiaSession
+from .remote_jmx_queue import RemoteJmxQueue
 
 
 class RemoteJmxBroker(object):
