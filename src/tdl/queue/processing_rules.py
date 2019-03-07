@@ -1,6 +1,6 @@
-from src.tdl.queue.abstractions.processing_rule import ProcessingRule
-from src.tdl.queue.abstractions.response.fatal_error_response import FatalErrorResponse
-from src.tdl.queue.abstractions.response.valid_response import ValidResponse
+from tdl.queue.abstractions.processing_rule import ProcessingRule
+from tdl.queue.abstractions.response.fatal_error_response import FatalErrorResponse
+from tdl.queue.abstractions.response.valid_response import ValidResponse
 
 
 class ProcessingRules:
