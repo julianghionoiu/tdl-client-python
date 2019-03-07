@@ -1,14 +1,6 @@
 import requests
 
 
-def bytes_to_str(content):
-    result = str(content)
-    result = result.replace("b'", "")
-    result = result.replace("\\n'", "")
-    result = result.replace("'", "")
-    return result
-
-
 class ChallengeServerClient:
 
     def __init__(self, hostname, port, journey_id, use_colours):
@@ -30,22 +22,22 @@ class ChallengeServerClient:
         url = "{}/action/{}/{}".format(self._url, action, encoded_path)
         response = requests.post(url, headers={"Accept": self._accept_header, "Accept-Charset": "UTF-8"})
         self.ensure_status_ok(response)
-        return response.content
+        return response.text
 
     def get(self, name):
         journey_id_utf8 = self.encode(self._journey_id)
         url = "{}/{}/{}".format(self._url, name, journey_id_utf8)
         response = requests.get(url, headers={"Accept": self._accept_header, "Accept-Charset": "UTF-8"})
         self.ensure_status_ok(response)
-        return response.content
+        return response.text
 
     def ensure_status_ok(self, response):
         if self.is_client_error(response.status_code):
-            raise ClientErrorException(response.content)
+            raise ClientErrorException(response.text)
         elif self.is_server_error(response.status_code):
-            raise ServerErrorException(response.content)
+            raise ServerErrorException(response.text)
         elif self.is_other_error_response(response.status_code):
-            raise OtherCommunicationException(response.content)
+            raise OtherCommunicationException(response.text)
 
     @staticmethod
     def is_client_error(response_status):

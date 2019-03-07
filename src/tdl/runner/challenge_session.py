@@ -4,15 +4,6 @@ from src.tdl.runner.recording_system import RecordingEvent
 from src.tdl.runner.recording_system import RecordingSystem
 from src.tdl.runner.round_management import RoundManagement
 
-
-def bytes_to_str(content):
-    result = str(content)
-    result = result.replace("b'", "")
-    result = result.replace("'", "")
-    result = result.replace(r'\n', "\n")
-    return result
-
-
 class ChallengeSession:
 
     @staticmethod
@@ -55,12 +46,12 @@ class ChallengeSession:
 
         try:
             journey_progress = self._challenge_server_client.get_journey_progress()
-            self._audit_stream.log(bytes_to_str(journey_progress))
+            self._audit_stream.log(journey_progress)
 
             available_actions = self._challenge_server_client.get_available_actions()
-            self._audit_stream.log(bytes_to_str(available_actions))
+            self._audit_stream.log(available_actions)
 
-            no_actions_available = 'No actions available.' in str(available_actions)
+            no_actions_available = 'No actions available.' in available_actions
             if no_actions_available:
                 self._recording_system.tell_to_stop()
                 return
@@ -77,12 +68,12 @@ class ChallengeSession:
                 last_fetched_round = RoundManagement.get_last_fetched_round(self._config.get_working_directory())
                 self._recording_system.notify_event(last_fetched_round, RecordingEvent.ROUND_COMPLETED)
 
-            if 'All challenges have been completed' in str(action_feedback):
+            if 'All challenges have been completed' in action_feedback:
                 self._recording_system.tell_to_stop()
 
-            self._audit_stream.log(bytes_to_str(action_feedback))
+            self._audit_stream.log(action_feedback)
             round_description = self._challenge_server_client.get_round_description()
-            round_description = bytes_to_str(round_description)
+            round_description = round_description
             RoundManagement.save_description(
                 self._recording_system,
                 round_description,

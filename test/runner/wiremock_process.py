@@ -2,14 +2,6 @@ import json
 import requests
 
 
-def bytes_to_str(content):
-    result = str(content)
-    result = result.replace("b'", "")
-    result = result.replace(r'\n', "")
-    result = result.replace("'", "")
-    return result
-
-
 class WiremockProcess:
 
     def __init__(self, hostname, port):
@@ -64,6 +56,6 @@ class WiremockProcess:
                                  headers={'Accept': 'application/json'},
                                  data=json.dumps(request))
 
-        content = json.loads(bytes_to_str(response.content))
+        content = response.json()
 
         return content['count']

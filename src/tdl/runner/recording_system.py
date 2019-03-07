@@ -12,14 +12,6 @@ class RecordingEvent:
     ROUND_COMPLETED = 'done'
 
 
-def bytes_to_str(content):
-    result = str(content)
-    result = result.replace("b'", "")
-    result = result.replace("\\n'", "")
-    result = result.replace("'", "")
-    return result
-
-
 class RecordingSystem:
 
     def __init__(self, recording_required):
@@ -33,8 +25,8 @@ class RecordingSystem:
         try:
             response = requests.get("{}/status".format(RECORDING_SYSTEM_ENDPOINT))
 
-            content = bytes_to_str(response.content)
-            if response.status_code == 200 and content.startswith("OK"):
+            response_body = response.text
+            if response.status_code == 200 and response_body.startswith("OK"):
                 return True
         except Exception as e:
             print(("Could not reach recording system: {}".format(str(e))))
@@ -60,9 +52,9 @@ class RecordingSystem:
             if response.status_code != 200:
                 print(("Recording system returned code: {}".format(response.status_code)))
                 return
-            content = bytes_to_str(response.content)
-            if not content.startswith("ACK"):
-                print(("Recording system returned body: {}".format(content)))
+            response_body = response.text
+            if not response_body.startswith("ACK"):
+                print(("Recording system returned body: {}".format(response_body)))
 
         except Exception as e:
             print(("Could not reach recording system: {}".format(str(e))))
