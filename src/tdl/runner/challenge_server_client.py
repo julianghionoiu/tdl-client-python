@@ -1,5 +1,14 @@
 import requests
 
+
+def bytes_to_str(content):
+    result = str(content)
+    result = result.replace("b'", "")
+    result = result.replace("\\n'", "")
+    result = result.replace("'", "")
+    return result
+
+
 class ChallengeServerClient:
 
     def __init__(self, hostname, port, journey_id, use_colours):

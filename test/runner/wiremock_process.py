@@ -2,6 +2,14 @@ import json
 import requests
 
 
+def bytes_to_str(content):
+    result = str(content)
+    result = result.replace("b'", "")
+    result = result.replace(r'\n', "")
+    result = result.replace("'", "")
+    return result
+
+
 class WiremockProcess:
 
     def __init__(self, hostname, port):
@@ -34,8 +42,8 @@ class WiremockProcess:
             }
 
         requests.post('{}/__admin/mappings/new'.format(self._base_url),
-                     headers={'Accept': 'application/json'},
-                     params=json.dumps(request))
+                      headers={'Accept': 'application/json'},
+                      data=json.dumps(request))
 
     def reset(self):
         requests.post('{}/__admin/reset'.format(self._base_url))
@@ -53,10 +61,9 @@ class WiremockProcess:
             request['bodyPatterns'] = [{'equalTo': body}]
 
         response = requests.post('{}/__admin/requests/count'.format(self._base_url),
-                                headers={'Accept': 'application/json'},
-                                params=json.dumps(request))
+                                 headers={'Accept': 'application/json'},
+                                 data=json.dumps(request))
 
-        if isinstance(response.content, bytes):
-            return '0'
+        content = json.loads(bytes_to_str(response.content))
 
-        return response.content['count']
+        return content['count']
