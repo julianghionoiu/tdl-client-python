@@ -1,7 +1,7 @@
 from setuptools import setup
 
 # !!!!!!! MAJOR DEBT - This is hardcoded
-VERSION = "0.26.0"
+VERSION = "0.26.1"
 
 # ~~~~~ Create configuration
 
@@ -17,7 +17,7 @@ setup(
             'tdl.runner'
         ],
         package_dir={'': 'src'},
-        install_requires=['stomp.py==4.1.5'],
+        install_requires=['stomp.py==4.1.5', 'requests==2.21.0'],
         version=VERSION,
         description='tdl-client-python',
         author='Julian Ghionoiu',
