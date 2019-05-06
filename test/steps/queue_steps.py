@@ -118,7 +118,9 @@ def get_implementation(implementation_name):
         'return null': lambda *args: None,
         'throw exception': lambda param: raise_(Exception('faulty user code')),
         'some logic': lambda: "ok",
-        'echo the request': lambda req: req,
+        'replay the value': lambda req: req,
+        'sum the elements of an array': lambda x: sum(x),
+        'generate array of integers': lambda x, y: list(range(x, y)),
         'work for 600ms': lambda param: do_slow_work(600),
     }
 
