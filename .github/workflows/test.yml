@@ -20,5 +20,7 @@ jobs:
         run: python -c "import sys; print(sys.version)"
       - name: Install dependencies
         run: pip install -r requirements.txt
+      - name: Start external dependencies
+        run: ./startExternalDependencies.sh
       - name: Run behave
         run: behave
