@@ -12,7 +12,6 @@ class RemoteBroker:
         hosts = [(hostname, port)]
         connect_timeout = 10
         self.conn = Connection(host_and_ports=hosts, timeout=connect_timeout)
-        self.conn.start()
         self.conn.connect(wait=True)
         self.request_queue_name = request_queue_name
         self.response_queue_name = response_queue_name
@@ -33,7 +32,7 @@ class RemoteBroker:
         self.conn.set_listener('listener', listener)
         self.conn.subscribe(
                 destination=self.request_queue_name,
-                id=1,
+                id="this",
                 ack='client-individual'
         )
         self.start_timer()
@@ -47,7 +46,7 @@ class RemoteBroker:
         ]))
 
     def stop(self):
-        self.conn.unsubscribe(1)
+        self.conn.unsubscribe("this")
         self.conn.remove_listener('listener')
 
     def close(self):

@@ -1,3 +1,5 @@
+import copy
+
 from stomp import ConnectionListener
 
 from tdl.queue.abstractions.request import Request
@@ -11,7 +13,9 @@ class Listener(ConnectionListener):
         self._stop_timer = stop_timer
         self._audit = audit
 
-    def on_message(self, headers, message_json):
+    def on_message(self, frame):
+        headers = copy.copy(frame.headers)
+        message_json = frame.body
         self._stop_timer()
         self._handling_strategy.process_next_request_from(
             self._remote_broker,
