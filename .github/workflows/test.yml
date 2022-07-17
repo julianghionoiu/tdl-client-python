@@ -20,7 +20,11 @@ jobs:
         run: python -c "import sys; print(sys.version)"
       - name: Install dependencies
         run: pip install -r requirements.txt
-      - name: Start external dependencies
-        run: ./startExternalDependencies.sh
+      - name: Start challenge server wiremock
+        run: python wiremock/wiremock-wrapper.py start 8222
+      - name: Start recording server wiremock
+        run: python wiremock/wiremock-wrapper.py start 41375
+      - name: Start broker
+        run: python broker/activemq-wrapper.py start
       - name: Run behave
         run: behave
