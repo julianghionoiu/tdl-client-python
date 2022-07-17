@@ -26,11 +26,5 @@ jobs:
         run: python wiremock/wiremock-wrapper.py start 8222
       - name: Start broker
         run: python broker/activemq-wrapper.py start
-
-      - name: Debug network (1)
-        run: netstat -tnpl
-      - name: Debug network (2)
-        run: ifconfig
-
       - name: Run behave
-        run: behave
+        run: behave -n "The server interaction"
