@@ -67,7 +67,7 @@ jobs:
       - name: Install Python dependencies
         run: pip install -r requirements.txt
       - name: Build
-        run: python setup.py sdist
+        run: python -m build
 
       # ~~~~~~~~~~~~~ Asset upload ~~~~~~~~~~~~~
       - name: Standardise dist name

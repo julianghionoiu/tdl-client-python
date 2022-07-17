@@ -102,7 +102,7 @@ See `behave` [docs](https://python-behave.readthedocs.io/en/latest/behave.html) 
 Run the below to generate a distributable archive:
 
 ```bash
-python setup.py sdist
+python3 -m build
 ```
 
 The `tdl-client-python-x.xx.x.tar.gz` archive can be found in the `dist` folder.
