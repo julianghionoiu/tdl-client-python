@@ -17,7 +17,7 @@ setup(
             'tdl.runner'
         ],
         package_dir={'': 'src'},
-        install_requires=['stomp.py==4.1.5', 'requests==2.21.0'],
+        install_requires=['stomp.py==8.0.1', 'requests==2.28.1'],
         version=VERSION,
         description='tdl-client-python',
         author='Julian Ghionoiu',
