@@ -26,8 +26,6 @@ class RecordingSystem:
             response = requests.get("{}/status".format(RECORDING_SYSTEM_ENDPOINT))
 
             response_body = response.text
-            print("DEBUG: response.status_code:"+str(response.status_code))
-            print("DEBUG: response_body:"+response_body)
             if response.status_code == 200 and response_body.startswith("OK"):
                 return True
         except Exception as e:

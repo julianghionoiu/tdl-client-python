@@ -40,4 +40,4 @@ jobs:
 
         # ~~~~~~~~~~~~~ Starts external deps ~~~~~~~~~~~~~
       - name: Run behave
-        run: behave -n "The server interaction"
+        run: behave
