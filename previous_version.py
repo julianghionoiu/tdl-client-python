@@ -1,6 +1,6 @@
 from __future__ import print_function
 
-PREVIOUS_VERSION = '0.27.8'
+PREVIOUS_VERSION = '0.27.9'
 
 
 def main():
