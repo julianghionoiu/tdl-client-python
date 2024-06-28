@@ -21,7 +21,7 @@ setup(
         'tdl.runner'
     ],
     package_dir={'': 'src'},
-    install_requires=['stomp.py==8.0.1', 'requests==2.32.3'],
+    install_requires=['stomp.py==8.1.2', 'requests==2.32.3'],
     version=VERSION,
     description='tdl-client-python',
     long_description=(this_directory / "README.md").read_text(),
