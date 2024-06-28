@@ -30,7 +30,7 @@ jobs:
 
       # ~~~~~~~~~~~~~ Asset upload ~~~~~~~~~~~~~
       - name: Standardise dist name
-        run: cp dist/tdl-client-python-*.tar.gz dist/tdl-client-python.tar.gz
+        run: cp dist/tdl-client_python-*.tar.gz dist/tdl-client-python.tar.gz
 
       - name: Release
         uses: softprops/action-gh-release@v2
