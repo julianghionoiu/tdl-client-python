@@ -57,9 +57,9 @@ docker pull apache/activemq-classic:6.1.0
 
 Start two Wiremock servers
 ```shell
-docker pull wiremock/wiremock:3.7.0
-docker run -it --rm -p 8222:8080 --name challenge-server wiremock/wiremock:3.7.0
-docker run -it --rm -p 41375:8080 --name recording-server wiremock/wiremock:3.7.0
+export WIREMOCK_CONTAINER=wiremock/wiremock:3.7.0
+docker run -d -it --rm -p 8222:8080 --name challenge-server ${WIREMOCK_CONTAINER}
+docker run -d -it --rm -p 41375:8080 --name recording-server ${WIREMOCK_CONTAINER}
 ```
 
 To inspect the stubs configured and the api
@@ -70,32 +70,15 @@ To inspect the stubs configured and the api
 
 Stopping the above services would be the same, using the `stop` command instead of the `start` command.
 
-#### Automatic (via script)
-
-Start and stop the wiremocks and broker services with the below:
- 
-```bash
-./startExternalDependencies.sh
-``` 
-
-```bash
-./stopExternalDependencies.sh
-``` 
 
 # Cleanup
 
 Stop external dependencies
 ```
-python ./broker/activemq-wrapper.py stop
-python wiremock/wiremock-wrapper.py stop 41375
-python wiremock/wiremock-wrapper.py stop 8222
+docker stop recording-server
+docker stop challenge-server
 ```
 
-or
-
-```bash
-./stopExternalDependencies.sh
-``` 
 
 # Tests
 
