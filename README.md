@@ -1,5 +1,5 @@
 
-[![Python Version](http://img.shields.io/badge/Python-3.10-blue.svg)](https://www.python.org/downloads/release/python-370/)
+[![Python Version](http://img.shields.io/badge/Python-3.12-blue.svg)](https://www.python.org/downloads/release/python-370/)
 [![PyPi Version](http://img.shields.io/pypi/v/tdl-client-python.svg)](https://pypi.python.org/pypi/tdl-client-python)
 
 # tdl-client-python Development
