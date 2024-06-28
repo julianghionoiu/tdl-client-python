@@ -7,6 +7,11 @@ jobs:
 
     runs-on: ubuntu-latest
     services:
+      activemq:
+        image: apache/activemq-classic:6.1.0
+        ports:
+          - 28161:8161
+          - 21613:61613
       challenge-server:
         image: wiremock/wiremock:3.7.0
         ports:
@@ -31,18 +36,6 @@ jobs:
       - name: Install Python dependencies
         run: pip install -r requirements.txt
 
-      # ~~~~~~~~~~~~~ Java setup (for Wirmock) ~~~~~~~~~~~~~
-      - uses: actions/setup-java@v3
-        with:
-          distribution: 'corretto'
-          java-version: '21 '
-      - name: Display Java version
-        run: java -version
-
       # ~~~~~~~~~~~~~ Test ~~~~~~~~~~~~~
-      - name: Start broker
-        run: python broker/activemq-wrapper.py start
-
-        # ~~~~~~~~~~~~~ Starts external deps ~~~~~~~~~~~~~
       - name: Run behave
         run: behave

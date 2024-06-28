@@ -35,25 +35,18 @@ Your virtualenv will be created in `./venv/`
 
 
 # Testing
+ 
+All test require the ActiveMQ broker and Wiremock to be started.
 
-#### Manual 
-
-All test require the ActiveMQ broker to be started.
-The following commands are available for the broker.
-
-```
-python ./broker/activemq-wrapper.py start
-python wiremock/wiremock-wrapper.py start 41375
-python wiremock/wiremock-wrapper.py start 8222
-```
-
-#### The message broker
-
+Start ActiveMQ
 ```shell
-docker pull apache/activemq-classic:6.1.0
+export ACTIVEMQ_CONTAINER=apache/activemq-classic:6.1.0
+docker run -d -it --rm -p 28161:8161 -p 21613:61613 --name activemq ${ACTIVEMQ_CONTAINER}
 ```
 
-#### Wiremock container
+The ActiveMQ web UI can be accessed at:
+http://localhost:28161/admin/
+use admin/admin to login
 
 Start two Wiremock servers
 ```shell
@@ -62,19 +55,17 @@ docker run -d -it --rm -p 8222:8080 --name challenge-server ${WIREMOCK_CONTAINER
 docker run -d -it --rm -p 41375:8080 --name recording-server ${WIREMOCK_CONTAINER}
 ```
 
-To inspect the stubs configured and the api
-```shell
-
-```
-
-
-Stopping the above services would be the same, using the `stop` command instead of the `start` command.
+The Wiremock admin UI can be found at:
+http://localhost:8222/__admin/
+and docs at
+http://localhost:8222/__admin/docs
 
 
 # Cleanup
 
-Stop external dependencies
+Stop dependencies
 ```
+docker stop activemq
 docker stop recording-server
 docker stop challenge-server
 ```
@@ -84,7 +75,7 @@ docker stop challenge-server
 
 Running all the tests,
 ```
-$ behave
+behave
 ```
 
 Pass arguments to behave, e.g. to run a specific scenario,

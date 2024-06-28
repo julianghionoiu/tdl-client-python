@@ -9,7 +9,7 @@ def before_all(context):
     context.broker = RemoteJmxBroker.connect(
         'localhost',
         '28161',
-        'TEST.BROKER'
+        'localhost'
     )
 
 
