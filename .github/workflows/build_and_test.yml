@@ -6,6 +6,15 @@ jobs:
   build-and-test:
 
     runs-on: ubuntu-latest
+    services:
+      challenge-server:
+        image: wiremock/wiremock:3.7.0
+        ports:
+          - 8222:8080
+      recording-server:
+        image: wiremock/wiremock:3.7.0
+        ports:
+          - 41375:8080
     steps:
       - uses: actions/checkout@v3
         with:
@@ -15,7 +24,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
+          python-version: '3.12'
           architecture: 'x64'
       - name: Display Python version
         run: python -c "import sys; print(sys.version)"
@@ -31,10 +40,6 @@ jobs:
         run: java -version
 
       # ~~~~~~~~~~~~~ Test ~~~~~~~~~~~~~
-      - name: Start recording server wiremock
-        run: python wiremock/wiremock-wrapper.py start 41375
-      - name: Start challenge server wiremock
-        run: python wiremock/wiremock-wrapper.py start 8222
       - name: Start broker
         run: python broker/activemq-wrapper.py start
 

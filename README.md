@@ -47,6 +47,27 @@ python wiremock/wiremock-wrapper.py start 41375
 python wiremock/wiremock-wrapper.py start 8222
 ```
 
+#### The message broker
+
+```shell
+docker pull apache/activemq-classic:6.1.0
+```
+
+#### Wiremock container
+
+Start two Wiremock servers
+```shell
+docker pull wiremock/wiremock:3.7.0
+docker run -it --rm -p 8222:8080 --name challenge-server wiremock/wiremock:3.7.0
+docker run -it --rm -p 41375:8080 --name recording-server wiremock/wiremock:3.7.0
+```
+
+To inspect the stubs configured and the api
+```shell
+
+```
+
+
 Stopping the above services would be the same, using the `stop` command instead of the `start` command.
 
 #### Automatic (via script)

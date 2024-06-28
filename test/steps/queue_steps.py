@@ -18,7 +18,8 @@ LOG_AUDIT_STREAM = LogAuditStream()
 REQUEST_QUEUE_NAME = 'some-user-req'
 RESPONSE_QUEUE_NAME = 'some-user-resp'
 
-@given('I start with a clean broker having a request and a response queue')
+
+@given("I start with a clean broker having a request and a response queue")
 def broker_setup(context):
     context.request_queue = context.broker.add_queue(REQUEST_QUEUE_NAME)
     context.request_queue.purge()
@@ -28,7 +29,8 @@ def broker_setup(context):
 
     LOG_AUDIT_STREAM.clear_log()
 
-@given('a client that connects to the queues')
+
+@given("a client that connects to the queues")
 def client_setup(context):
     config = ImplementationRunnerConfig()\
         .set_hostname(HOSTNAME)\
@@ -59,7 +61,7 @@ def client_with_wrong_broker(context):
     context.queue_implementation_runner = context.queue_implementation_runner_builder.create()
 
 
-@then("the time to wait for requests is (\d+)ms")
+@then(r'the time to wait for requests is (\d+)ms')
 def check_time(context, expected_timeout):
     assert_that(
         context.queue_implementation_runner.get_request_timeout_millis(),
@@ -93,7 +95,7 @@ def initialize_request_queue(context):
     context.request_count = context.request_queue.get_size()
 
 
-@given("I receive (\d+) identical requests like")
+@given(r'I receive (\d+) identical requests like')
 def receive_multiple_identical_request(context, num):
     for x in range(int(num)):
         for row in context.table:
@@ -220,7 +222,7 @@ def i_should_get_no_exception(_):
     pass
 
 
-@then('the processing time should be lower than (\d+)ms')
+@then(r'the processing time should be lower than (\d+)ms')
 def processing_time_should_be_lower_than(context, num):
     print("total_processing_time " + str(context.queue_implementation_runner.total_processing_time_millis))
     assert(int(num) > context.queue_implementation_runner.total_processing_time_millis)

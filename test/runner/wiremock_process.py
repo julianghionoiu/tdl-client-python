@@ -33,9 +33,8 @@ class WiremockProcess:
                 }
             }
 
-        requests.post('{}/__admin/mappings/new'.format(self._base_url),
-                      headers={'Accept': 'application/json'},
-                      data=json.dumps(request))
+        requests.post('{}/__admin/mappings'.format(self._base_url), headers={'Accept': 'application/json'},
+                             data=json.dumps(request))
 
     def reset(self):
         requests.post('{}/__admin/reset'.format(self._base_url))
