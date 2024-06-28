@@ -2,15 +2,13 @@
 
 SCRIPT_FOLDER="$(cd -P "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 VERSION_FILE="${SCRIPT_FOLDER}/previous_version.py"
-TMP_VERSION_FILE="${SCRIPT_FOLDER}/build/versions.txt"
-
 
 echo "Reading setup.py properties. This might take some time."
 
 # Previous
-PREVIOUS_VERSION=`python previous_version.py`
+PREVIOUS_VERSION=$(python previous_version.py)
 echo "PREVIOUS_VERSION = $PREVIOUS_VERSION"
-CURRENT_VERSION=`python setup.py --version`
+CURRENT_VERSION=$(python setup.py --version)
 echo "CURRENT_VERSION = $CURRENT_VERSION"
 
 # Prompt for version confirmation

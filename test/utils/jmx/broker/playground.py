@@ -4,7 +4,7 @@ from .jolokia_session import JolokiaSession
 from .remote_jmx_queue import RemoteJmxQueue
 from .remote_jmx_broker import RemoteJmxBroker
 
-broker = RemoteJmxBroker.connect('localhost', '28161','TEST.BROKER')
+broker = RemoteJmxBroker.connect('localhost', '28161','localhost')
 queue = broker.add_queue('test_queue')
 
 queue.send_text_message("Message from RemoteJmxQueue")
