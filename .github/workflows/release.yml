@@ -29,6 +29,8 @@ jobs:
         run: python -m build
 
       # ~~~~~~~~~~~~~ Asset upload ~~~~~~~~~~~~~
+      - name: X
+        run: ls -al ./dist
       - name: Standardise dist name
         run: cp dist/tdl-client_python-*.tar.gz dist/tdl-client-python.tar.gz
 
