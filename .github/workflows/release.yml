@@ -20,7 +20,7 @@ jobs:
         id: create_tag
         run: |
           tag=$(basename "${{ github.ref }}")
-          echo "::set-output name=tag::$tag"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -52,7 +52,7 @@ jobs:
         id: upload_info
         run: |
           upload_url=$(cat info/upload_url)
-          echo "::set-output name=upload_url::$upload_url"
+          echo "upload_url=$upload_url" >> "$GITHUB_OUTPUT"
       - name: Checkout
         uses: actions/checkout@v3
 
@@ -94,7 +94,7 @@ jobs:
         id: publish_info
         run: |
           release_id=$(cat info/release_id)
-          echo "::set-output name=release_id::$release_id"
+          echo "release_id=$release_id" >> "$GITHUB_OUTPUT"
       - uses: eregon/publish-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
