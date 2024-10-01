@@ -3,5 +3,5 @@ behave==1.2.6
 PyHamcrest==2.1.0
 coverage==7.6.0
 stomp.py==8.1.2
-build==1.2.1
+build==1.2.2
 setuptools==72.1.0
