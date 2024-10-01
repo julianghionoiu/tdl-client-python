@@ -4,4 +4,4 @@ PyHamcrest==2.1.0
 coverage==7.6.0
 stomp.py==8.1.2
 build==1.2.1
-setuptools==72.1.0
+setuptools==75.1.0
