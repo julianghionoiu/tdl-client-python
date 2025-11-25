@@ -5,7 +5,7 @@ class ImplementationRunnerConfig:
 
     def __init__(self):
         self._port = 61613
-        self._request_timeout_millis = 500
+        self._request_timeout_millis = 1500
         self._audit_stream = StdoutAuditStream
         self._hostname = None
         self._request_queue_name = None
